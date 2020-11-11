@@ -4,17 +4,11 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
   let socket = io('http://localhost:3000')
-  const keywords = ['werkervaring','werk ervaring','portfolio','kennis','skills']
   document.querySelector('#chat-form').addEventListener('submit', (e) => {
     e.preventDefault()
     let message = document.querySelector('#chat-input').value
     document.querySelector('#chat-input').value =''
-    // socket.emit('messageToServer', message)
-    const foundKeywords = keywords.filter(kw => {
-      return message.includes(kw)
-    });  
-    socket.emit('keywordTrigger',foundKeywords)
-    
+      socket.emit('messageToServer', message)    
   })
 
   socket.on('messageFromServer', (msg) => {
@@ -24,6 +18,13 @@
       messageContainer.appendChild(li)
   })
 
+  socket.on('keywordReply', (msg) => {
+    console.log(msg)
+    let messageContainer = document.querySelector('#message-list')
+    let li = document.createElement('li')
+    li.innerText = msg
+    messageContainer.appendChild(li)
+  })
   
 
 

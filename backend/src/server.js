@@ -19,6 +19,9 @@ app.set('view engine', 'hbs')
 app.set('views', viewsPath)
 hbs.registerPartials(partialsPath)
 
+// Inserting nessacery files and data
+const keywords = require('../utils/db/keywordMapping')
+const keywordsArray = ['hoi','doei']
 
 //Testing home route
 app.get('/', (req, res) => {
@@ -32,15 +35,33 @@ const socketio = require('socket.io')
 
 const io = socketio(expressServer)
 io.on('connection', (socket) => {
-    const keywords = ['werkervaring','werk ervaring','portfolio','kennis','skills']
     console.log('a user connected');
     socket.emit('welcome', 'Welcome!')
 
     socket.on('messageToServer', (msg) => {
-        io.emit('messageFromServer', msg)
+        socket.emit('messageFromServer', msg)
+        let replySend = false;
+        keywords.forEach((keyword) => {
+            keyword.triggerWords.forEach((word) => {
+                if(msg.includes(word)){
+                    socket.emit('messageFromServer', keyword.message)
+                    replySend = true
+                }
+            })            
+        })
+        if(replySend === false){
+            socket.emit('messageFromServer', 'I do not understand your message, please try again')
+        }else{
+            console.log('reply send');
+        }
     })
+
+
     socket.on('keywordTrigger', (keywordsFromClient) => {
         console.log(keywordsFromClient);
+        keywordsFromClient.forEach((keyword) => {
+            socket.emit('keywordReply', `Here is a link that may match your question http://localhost:3000`)
+        })
     })
 })
 
