@@ -32,8 +32,17 @@ const socketio = require('socket.io')
 
 const io = socketio(expressServer)
 io.on('connection', (socket) => {
+    const keywords = ['werkervaring','werk ervaring','portfolio','kennis','skills']
     console.log('a user connected');
     socket.emit('welcome', 'Welcome!')
+
+    socket.on('messageToServer', (msg) => {
+        io.emit('messageFromServer', msg)
+    })
+    socket.on('keywordTrigger', (keywordsFromClient) => {
+        console.log(keywordsFromClient);
+    })
 })
+
 
 module.exports = expressServer

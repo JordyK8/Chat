@@ -1,3 +1,30 @@
 body{
     background-color: lightpink;
 }
+#chat{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 350px;
+    width: 350px;
+    background-color: #333333;
+    border: 2px solid silver;
+    border-radius: 3px;
+}
+#message-box{
+    width: 100%;
+    padding: 5px 5px;
+    background-color: #555555;
+    border-radius: 3px;
+    height: 300px;
+    color: white;
+}
+#chat-form{
+
+}
+#chat-input{
+    float: left;
+    color: black;
+}
+#chat-button{
+float: right;}

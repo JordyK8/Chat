@@ -3,8 +3,33 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js" integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf" crossorigin="anonymous"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-  var socket = io();
+  let socket = io('http://localhost:3000')
+  const keywords = ['werkervaring','werk ervaring','portfolio','kennis','skills']
+  document.querySelector('#chat-form').addEventListener('submit', (e) => {
+    e.preventDefault()
+    let message = document.querySelector('#chat-input').value
+    document.querySelector('#chat-input').value =''
+    // socket.emit('messageToServer', message)
+    const foundKeywords = keywords.filter(kw => {
+      return message.includes(kw)
+    });  
+    socket.emit('keywordTrigger',foundKeywords)
+    
+  })
+
+  socket.on('messageFromServer', (msg) => {
+      let messageContainer = document.querySelector('#message-list')
+      let li = document.createElement('li')
+      li.innerText = msg
+      messageContainer.appendChild(li)
+  })
+
+  
+
+
+
+
 </script>
-<script src="/scripts/scripts.js"></script>
+
 </body>
 </html>
