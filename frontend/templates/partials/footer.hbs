@@ -10,7 +10,14 @@
     document.querySelector('#chat-input').value =''
       socket.emit('messageToServer', message)    
   })
+  socket.on('welcome', (data) => {
+    console.log(data);
+    const nsList = document.querySelector('#namespace-list')
+    data.nsData.forEach((namespace) => {
+      nsList.innerHTML +=`<li><a>${namespace.title}</a></li>`
 
+    })
+  })
   socket.on('messageFromServer', (msg) => {
       let messageContainer = document.querySelector('#message-list')
       let li = document.createElement('li')

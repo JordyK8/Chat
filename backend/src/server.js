@@ -27,18 +27,23 @@ const keywordsArray = ['hoi','doei']
 app.get('/', (req, res) => {
     res.render('home', {title:'Home'})
 })
+app.get('/contact', (req, res) => {
+    res.render('contact', {title: 'Contact'})
+})
 const expressServer = app.listen(PORT, () => {
     console.log(`Server is listening on port: ${PORT}`)
 })
 
 const socketio = require('socket.io')
 
+const namespaces = require('../utils/db/namespaces')
 const io = socketio(expressServer)
 io.on('connection', (socket) => {
     console.log('a user connected');
-    socket.emit('welcome', 'Welcome!')
+    socket.emit('welcome', {message: 'Welcome!', nsData: namespaces})
 
     socket.on('messageToServer', (msg) => {
+        if(msg.includes('@server')){
         socket.emit('messageFromServer', msg)
         let replySend = false;
         keywords.forEach((keyword) => {
@@ -54,6 +59,10 @@ io.on('connection', (socket) => {
         }else{
             console.log('reply send');
         }
+    }else{
+        io.emit('messageFromServer', msg)
+
+    }
     })
 
 
