@@ -74,5 +74,11 @@ io.on('connection', (socket) => {
     })
 })
 
+namespaces.forEach((namespace) => {
+    io.of(namespace.endpoint).on('connection', (nsSocket) => {
+        nsSocket.emit('welcome', { namespace, rooms: namespace.rooms})
+    })
+})
+
 
 module.exports = expressServer
