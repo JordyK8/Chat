@@ -60,10 +60,14 @@ io.on('connection', (socket) => {
             console.log('reply send');
         }
     }else{
-        const message = {
-            
+        const messageObject = {
+            username: 'Johnny',
+            image: 'https://www.flaticon.com/svg/static/icons/svg/21/21104.svg',
+            time: new Date(),
+            text: msg
         }
-        io.emit('messageFromServer', msg)
+
+        io.emit('messageFromServer', messageObject)
 
     }
     })
