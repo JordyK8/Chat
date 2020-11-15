@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
         let replySend = false;
         keywords.forEach((keyword) => {
             keyword.triggerWords.forEach((word) => {
-                if(msg.includes(word)){
+                if(msg.toLowerCase().includes(word)){
                     socket.emit('messageFromServer', keyword.message)
                     replySend = true
                 }
