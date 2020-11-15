@@ -2,39 +2,84 @@ body{
     background-color: lightpink;
 }
 #chat{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: 425px;
+    width: 350px;
     margin: 0 auto;
-    width: 80%;
     background-color: #333333;
     border: 2px solid silver;
     border-radius: 3px;
-    padding: 20px;
+    
     
 }
+#chatbox{
+    padding: 0px 10px;
+}
 #message-box{
-    height: 400px;
-    width: 100%;
-    padding: 5px 5px;
+    height: 300px;
+    width: 325px;
+    padding: 5px 0px;
     background-color: #555555;
-    border-radius: 3px;
+    border: 2px solid black;
+    border-bottom: 0px solid black;
+    border-radius: 1px;
     overflow: scroll;
     color: white;
+    
+ 
+}
+#message-list{
+    list-style: none;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+ 
+
+}
+
+#message-list li:nth-child(even){
+    background-color: #999999;
+
+}
+.message{
+    padding: 5px;
 }
 #message-box::-webkit-scrollbar {
     display: none;
   }
 #chat-form{
-    display: inline;
+    overflow: hidden;
 }
 #chat-input{
     color: black;
-    width: 90%;
+    width: 265px;
+    height: 42px;
+    border-radius: 1px;
+    border: 2px solid black;
+    border-right: 1px solid black;
+    margin-top: 0px;
+
+
 }
 #chat-button{
-    
+    width: 60px;
+    height: 42px;
+    border-radius: 1px;
+    border: 2px solid black;
+    border-left: 1px solid black;
+    font-size: 15px;
+    margin-top: -4px;
+    margin-left: -4px;
+
 }
+
 
 #namespace-list{
     display: inline-flex;
+    margin: 0;
+    padding: 0;
  }
  #namespace-list > * {
     cursor: pointer;
