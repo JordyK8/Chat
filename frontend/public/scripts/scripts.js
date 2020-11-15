@@ -36,11 +36,26 @@
   })
 
   socket.on('keywordReply', (msg) => {
-    console.log(msg)
-    let messageContainer = document.querySelector('#message-list')
-    let li = document.createElement('li')
-    li.innerText = msg
-    messageContainer.appendChild(li)
+    // console.log(msg)
+    // let messageContainer = document.querySelector('#message-list')
+    // let li = document.createElement('li')
+    // li.innerText = msg
+    // messageContainer.appendChild(li)
+    const newMsg = buildHTML(msg)
+    function buildHTML(msg){
+      const convertedDate = new Date(msg.time).toLocaleString()
+      const newHTML = `<li>
+        <div class="message-img">
+            <img src="${msg.image}" height="25px" width="25px" alt="">
+            <div class="message-time"> ${msg.username}<span>${convertedDate}</span> </div>
+        </div>
+        <div> 
+            <div class="message-text"><span>${msg.text}</span></div>
+        </div>
+        </li>`
+      return newHTML
+    }
+    document.querySelector('#message-list').innerHTML += newMsg
   })
   
 //function to join the namespaces

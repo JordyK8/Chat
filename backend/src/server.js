@@ -60,6 +60,9 @@ io.on('connection', (socket) => {
             console.log('reply send');
         }
     }else{
+        const message = {
+            
+        }
         io.emit('messageFromServer', msg)
 
     }

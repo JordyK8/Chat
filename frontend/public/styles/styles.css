@@ -36,12 +36,14 @@ body{
     padding: 0;
     margin: 0;
  
-
 }
 
 #message-list li:nth-child(even){
     background-color: #999999;
 
+}
+#message-list li{
+    margin-left: 10px;
 }
 .message{
     padding: 5px;
@@ -50,7 +52,9 @@ body{
     display: none;
   }
 #chat-form{
-    overflow: hidden;
+    overflow: scroll;
+    margin-left: 10px;
+
 }
 #chat-input{
     color: black;
@@ -85,4 +89,12 @@ body{
     cursor: pointer;
     margin: 10px;
     
+}
+.message-img{
+    display: inline;
+}
+.message-time{
+    display: inline;
+    font-style: italic;
+    font-size: 14px;
 }
