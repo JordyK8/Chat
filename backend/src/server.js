@@ -42,48 +42,93 @@ io.on('connection', (socket) => {
     console.log('a user connected');
     socket.emit('welcome', {message: 'Welcome!', nsData: namespaces})
 
-    socket.on('messageToServer', (msg) => {
-        if(msg.includes('@server')){
-        socket.emit('messageFromServer', msg)
-        let replySend = false;
-        keywords.forEach((keyword) => {
-            keyword.triggerWords.forEach((word) => {
-                if(msg.toLowerCase().includes(word)){
-                    socket.emit('messageFromServer', keyword.message)
-                    replySend = true
-                }
-            })            
-        })
-        if(replySend === false){
-            socket.emit('messageFromServer', 'I do not understand your message, please try again')
-        }else{
-            console.log('reply send');
-        }
-    }else{
-        const messageObject = {
-            username: 'Johnny',
-            image: 'https://www.flaticon.com/svg/static/icons/svg/21/21104.svg',
-            time: new Date(),
-            text: msg
-        }
+    // socket.on('messageToServer', (msg) => {
+    //     if(msg.includes('@server')){
+    //     socket.emit('messageFromServer', msg)
+    //     let replySend = false;
+    //     keywords.forEach((keyword) => {
+    //         keyword.triggerWords.forEach((word) => {
+    //             if(msg.toLowerCase().includes(word)){
+    //                 socket.emit('messageFromServer', keyword.message)
+    //                 replySend = true
+    //             }
+    //         })            
+    //     })
+    //     if(replySend === false){
+    //         socket.emit('messageFromServer', 'I do not understand your message, please try again')
+    //     }else{
+    //         console.log('reply send');
+    //     }
+    // }else{
+    //     const messageObject = {
+    //         username: 'Johnny',
+    //         image: 'https://www.flaticon.com/svg/static/icons/svg/21/21104.svg',
+    //         time: new Date(),
+    //         text: msg
+    //     }
 
-        io.emit('messageFromServer', messageObject)
+    //     io.emit('messageFromServer', messageObject)
 
-    }
-    })
+    // }
+    // })
 
 
-    socket.on('keywordTrigger', (keywordsFromClient) => {
-        console.log(keywordsFromClient);
-        keywordsFromClient.forEach((keyword) => {
-            socket.emit('keywordReply', `Here is a link that may match your question http://localhost:3000`)
-        })
-    })
+    // socket.on('keywordTrigger', (keywordsFromClient) => {
+    //     console.log(keywordsFromClient);
+    //     keywordsFromClient.forEach((keyword) => {
+    //         socket.emit('keywordReply', `Here is a link that may match your question http://localhost:3000`)
+    //     })
+    // })
 })
 
 namespaces.forEach((namespace) => {
     io.of(namespace.endpoint).on('connection', (nsSocket) => {
-        nsSocket.emit('welcome', { namespace, rooms: namespace.rooms})
+        nsSocket.emit('welcome',`Welcome to the namespace: ${namespace.title}`)
+        
+        nsSocket.on('messageToServer', (msg) => {
+        const messageObject = {
+            username: 'Johnny',
+            image: 'https://www.flaticon.com/svg/static/icons/svg/21/21104.svg',
+            time: new Date(),
+            text: ''
+        }
+            if(msg.includes('@server')){
+                messageObject.text = msg
+                nsSocket.emit('messageFromServer', messageObject)
+                let replySend = false;
+                keywords.forEach((keyword) => {
+                    keyword.triggerWords.forEach((word) => {
+                        if(msg.toLowerCase().includes(word)){
+                            messageObject.text = keyword.message
+                            messageObject.username = 'Server'
+                            nsSocket.emit('messageFromServer', messageObject)
+                            replySend = true
+                        }
+                    })            
+                })
+                if(replySend === false){
+                    messageObject.text = 'I do not understand your message, please try again'
+                    messageObject.username = 'Server'
+                    nsSocket.emit('messageFromServer', messageObject)
+                }else{
+                    console.log('reply send');
+                }
+            }else{
+                messageObject.text = msg
+                io.of(namespace.endpoint).emit('messageFromServer', messageObject)
+            }
+        })
+
+
+        nsSocket.on('keywordTrigger', (keywordsFromClient) => {
+            console.log(keywordsFromClient);
+            keywordsFromClient.forEach((keyword) => {
+                nsSocket.emit('keywordReply', `Here is a link that may match your question http://localhost:3000`)
+            })
+        })
+
+
+
     })
 })
 
