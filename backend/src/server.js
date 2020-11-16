@@ -83,8 +83,19 @@ io.on('connection', (socket) => {
 
 namespaces.forEach((namespace) => {
     io.of(namespace.endpoint).on('connection', (nsSocket) => {
-        nsSocket.emit('welcome',`Welcome to the namespace: ${namespace.title}`)
-        
+        const nsRooms = namespace.rooms
+        nsSocket.emit('nsRooms', nsRooms)
+        nsSocket.join(nsRooms[0])
+        nsSocket.on('joinRoom',(roomToJoin) => {
+            console.log('Rooms info');
+            console.log(nsSocket.rooms);
+            console.log(nsSocket.rooms)
+            const roomToLeave = nsSocket.rooms[1]
+            console.log(roomToLeave);
+            nsSocket.leave(roomToLeave)
+            console.log(nsSocket.rooms);
+            nsSocket.join(roomToJoin)
+        })
         nsSocket.on('messageToServer', (msg) => {
         const messageObject = {
             username: 'Johnny',

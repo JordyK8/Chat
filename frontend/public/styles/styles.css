@@ -6,7 +6,7 @@ body{
     bottom: 0;
     right: 0;
     height: 425px;
-    width: 350px;
+    width: 450px;
     margin: 0 auto;
     background-color: #333333;
     border: 2px solid silver;
@@ -16,6 +16,7 @@ body{
 }
 #chatbox{
     padding: 0px 10px;
+    float: right;
 }
 #message-box{
     height: 300px;
@@ -63,13 +64,37 @@ body{
 .message{
     padding: 5px;
 }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
 #message-box::-webkit-scrollbar {
     display: none;
   }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  #message-box {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  /* Hide scrollbar for Chrome, Safari and Opera */
+#message-list::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  #message-list {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+
+
+
+
 #chat-form{
     
     margin-left: 10px;
-
+    float: right;
+    padding-right: 10px;
 }
 #chat-input{
     color: black;
@@ -98,10 +123,23 @@ body{
 #namespace-list{
     display: inline-flex;
     margin: 0;
+    margin-left: 100px;
     padding: 0;
  }
  #namespace-list > * {
     cursor: pointer;
     margin: 10px;
     
+}
+#rooms-container{
+    position: absolute;
+}
+#rooms-list{
+    list-style: none;
+    color: white;
+    margin-left: -20px;
+    margin-top: 75px;
+}
+.selectedNS{
+    border: 1px solid darkgoldenrod;
 }

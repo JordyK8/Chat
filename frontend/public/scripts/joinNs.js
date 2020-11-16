@@ -1,6 +1,10 @@
- 
-function joinNS(endpoint){
-
+function joinNS(endpoint, elem){
+    let roomList = document.querySelector('#rooms-list')
+    while(roomList.firstChild){
+        roomList.removeChild(roomList.firstChild)
+    }
+    roomList
+    elem.classList.add('selectedNS')
     if(nsSocket){
       nsSocket.close()
       document.querySelector('#chat-form').removeEventListener('submit', sendChatMessage)
@@ -9,6 +13,20 @@ function joinNS(endpoint){
     nsSocket = io(`http://localhost:3000${endpoint}`)
     nsSocket.on('welcome', (msg) => {
     })
+    nsSocket.on('nsRooms', (nsRooms) => {
+        nsRooms.forEach(room => {
+            roomList = document.querySelector('#rooms-list')
+            roomList.innerHTML += `<li class="room">${room}</li>`
+        });
+        let roomNodes = document.getElementsByClassName('room')
+        Array.from(roomNodes).forEach((room) => {
+            room.addEventListener('click', (e) => {
+                console.log(e.target.innerText);
+                joinRoom(e.target.innerText)
+            })
+        })
+    })
+   
     nsSocket.on('messageFromServer', (msg) => {
       const newMsg = buildHTML(msg)
     function buildHTML(msg){
@@ -29,20 +47,22 @@ function joinNS(endpoint){
      messagesUl.lastElementChild.scrollIntoView()
     })
   
-  nsSocket.on('keywordReply', (msg) => {
-    let messageContainer = document.querySelector('#message-list')
-    let li = document.createElement('li')
-    li.innerText = msg
-    messageContainer.appendChild(li)
-    
-  })
-  document.querySelector('#chat-form').addEventListener('submit', sendChatMessage)
+    nsSocket.on('keywordReply', (msg) => {
+        let messageContainer = document.querySelector('#message-list')
+        let li = document.createElement('li')
+        li.innerText = msg
+        messageContainer.appendChild(li) 
+    })
+    document.querySelector('#chat-form').addEventListener('submit', sendChatMessage)
+}
   
-  }
-  
-  function sendChatMessage(e){
+function sendChatMessage(e){
     e.preventDefault()
     let message = document.querySelector('#chat-input').value
     document.querySelector('#chat-input').value =''
-      nsSocket.emit('messageToServer', message)    
-  }
+    nsSocket.emit('messageToServer', message)    
+}
+
+function joinRoom(room){
+    nsSocket.emit('joinRoom', room)
+}
