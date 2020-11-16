@@ -87,14 +87,10 @@ namespaces.forEach((namespace) => {
         nsSocket.emit('nsRooms', nsRooms)
         nsSocket.join(nsRooms[0])
         nsSocket.on('joinRoom',(roomToJoin) => {
-            console.log('Rooms info');
-            console.log(nsSocket.rooms);
-            console.log(nsSocket.rooms)
-            const roomToLeave = nsSocket.rooms[1]
-            console.log(roomToLeave);
+            const roomToLeave = Array.from(nsSocket.rooms)[1]
             nsSocket.leave(roomToLeave)
-            console.log(nsSocket.rooms);
             nsSocket.join(roomToJoin)
+            console.log(nsSocket.rooms);
         })
         nsSocket.on('messageToServer', (msg) => {
         const messageObject = {

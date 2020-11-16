@@ -19,10 +19,16 @@ function joinNS(endpoint, elem){
             roomList.innerHTML += `<li class="room">${room}</li>`
         });
         let roomNodes = document.getElementsByClassName('room')
+        Array.from(roomNodes)[0].classList.add('selectedRoom')
+        
         Array.from(roomNodes).forEach((room) => {
             room.addEventListener('click', (e) => {
+                Array.from(roomNodes).forEach((rm) => {
+                    rm.classList.remove('selectedRoom')
+                })
                 console.log(e.target.innerText);
                 joinRoom(e.target.innerText)
+                e.target.classList.add('selectedRoom')
             })
         })
     })

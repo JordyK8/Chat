@@ -143,3 +143,6 @@ body{
 .selectedNS{
     border: 1px solid darkgoldenrod;
 }
+.selectedRoom{
+    color: darkgoldenrod;
+}
