@@ -157,3 +157,10 @@ body{
     margin-left: 10px;
     float: right;
 }
+.roomDiv{
+    display: inline;
+}
+.roomUsers{
+    font-size: 12px;
+    margin-left: 10px;
+}

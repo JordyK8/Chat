@@ -143,7 +143,14 @@ namespaces.forEach((namespace) => {
 
 
 function updateUsersInRoom(namespace, room){
-    
-    console.log(io.of(namespace.endpoint).sockets)
+    // all sockets in the "chat" namespace and in the "general" room
+const ids = io.of(namespace.endpoint).in(room).allSockets();
+    ids.then((ids) => {
+        console.log(`${room} has ${Array.from(ids).length} members in it`);
+        let users = Array.from(ids).length
+        io.of(namespace.endpoint).emit('roomNumberUpdate', {room, users})
+    }).catch((error) => {
+        console.log(error);
+    })
     
 }

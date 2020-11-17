@@ -13,10 +13,16 @@ function joinNS(endpoint, elem){
     nsSocket = io(`http://localhost:3000${endpoint}`)
     nsSocket.on('welcome', (msg) => {
     })
+    nsSocket.on('roomNumberUpdate', (data) => {
+        console.log('hallooooww???' , data);
+        const roomItem = document.getElementById(`${data.room}room`)
+        console.log(roomItem);
+        roomItem.innerText = data.users
+      })
     nsSocket.on('nsRooms', (nsRooms) => {
         nsRooms.forEach(room => {
             roomList = document.querySelector('#rooms-list')
-            roomList.innerHTML += `<li class="room">${room} <span class='numberOfMembers'><img class="membersImage" src="https://cdn4.iconfinder.com/data/icons/browser-ui-small-size-optimized-set/154/user-login-human-man-body-512.png" width="15px" heigth="15px"/>5</span></li>`
+            roomList.innerHTML += `<li class="room">${room}</li><img class="membersImage" src="https://cdn4.iconfinder.com/data/icons/browser-ui-small-size-optimized-set/154/user-login-human-man-body-512.png" width="15px" heigth="15px"/><span class="roomUsers" id="${room}room" class='numberOfMembers'></span></div>`
         });
         let roomNodes = document.getElementsByClassName('room')
         Array.from(roomNodes)[0].classList.add('selectedRoom')
@@ -26,7 +32,7 @@ function joinNS(endpoint, elem){
                 Array.from(roomNodes).forEach((rm) => {
                     rm.classList.remove('selectedRoom')
                 })
-                console.log(e.target.innerText);
+                console.log(room.innerText);
                 joinRoom(e.target.innerText)
                 room.classList.add('selectedRoom')
             })
@@ -71,6 +77,6 @@ function sendChatMessage(e){
 
 function joinRoom(room){
     nsSocket.emit('joinRoom', room, (newNumberOfMembers) => {
-        document.querySelector('.numberOfMembers').innerText = 2
+        
     })
 }
