@@ -8,9 +8,6 @@
     data.nsData.forEach((namespace) => {
       nsList.innerHTML +=`<div class="namespace" ns=${namespace.endpoint}><img src="${namespace.image}" width="50px" height="50px "/></div>`
     })
-    socket.on('roomNumberUpdate', (data) => {
-      console.log(data);
-    })
     const namespacesArray = document.getElementsByClassName('namespace')
        // Adding listeners to the namespaces
       Array.from(namespacesArray).forEach((elem)=>{
