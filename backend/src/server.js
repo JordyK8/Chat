@@ -86,11 +86,13 @@ namespaces.forEach((namespace) => {
         const nsRooms = namespace.rooms
         nsSocket.emit('nsRooms', nsRooms)
         nsSocket.join(nsRooms[0])
-        nsSocket.on('joinRoom',(roomToJoin) => {
+        nsSocket.on('joinRoom',(roomToJoin, numberOfUsersCallBack) => {
             const roomToLeave = Array.from(nsSocket.rooms)[1]
             nsSocket.leave(roomToLeave)
+            updateUsersInRoom(namespace, roomToLeave)
             nsSocket.join(roomToJoin)
-            console.log(nsSocket.rooms);
+            updateUsersInRoom(namespace, roomToJoin)
+            
         })
         nsSocket.on('messageToServer', (msg) => {
         const messageObject = {
@@ -140,4 +142,8 @@ namespaces.forEach((namespace) => {
 })
 
 
-module.exports = expressServer
+function updateUsersInRoom(namespace, room){
+    
+    console.log(io.of(namespace.endpoint).sockets)
+    
+}

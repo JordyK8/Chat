@@ -16,7 +16,7 @@ function joinNS(endpoint, elem){
     nsSocket.on('nsRooms', (nsRooms) => {
         nsRooms.forEach(room => {
             roomList = document.querySelector('#rooms-list')
-            roomList.innerHTML += `<li class="room">${room}</li>`
+            roomList.innerHTML += `<li class="room">${room} <span class='numberOfMembers'><img class="membersImage" src="https://cdn4.iconfinder.com/data/icons/browser-ui-small-size-optimized-set/154/user-login-human-man-body-512.png" width="15px" heigth="15px"/>5</span></li>`
         });
         let roomNodes = document.getElementsByClassName('room')
         Array.from(roomNodes)[0].classList.add('selectedRoom')
@@ -28,7 +28,7 @@ function joinNS(endpoint, elem){
                 })
                 console.log(e.target.innerText);
                 joinRoom(e.target.innerText)
-                e.target.classList.add('selectedRoom')
+                room.classList.add('selectedRoom')
             })
         })
     })
@@ -70,5 +70,7 @@ function sendChatMessage(e){
 }
 
 function joinRoom(room){
-    nsSocket.emit('joinRoom', room)
+    nsSocket.emit('joinRoom', room, (newNumberOfMembers) => {
+        document.querySelector('.numberOfMembers').innerText = 2
+    })
 }

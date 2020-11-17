@@ -140,9 +140,20 @@ body{
     margin-left: -20px;
     margin-top: 75px;
 }
+.room{
+    margin-top: 5px;
+    font-size: 14px;
+}
 .selectedNS{
     border: 1px solid darkgoldenrod;
 }
 .selectedRoom{
     color: darkgoldenrod;
+}
+
+.numberOfMembers{
+    font-size: 12px;
+    
+    margin-left: 10px;
+    float: right;
 }
