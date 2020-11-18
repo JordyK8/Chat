@@ -41,44 +41,6 @@ const io = socketio(expressServer)
 io.on('connection', (socket) => {
     console.log('a user connected');
     socket.emit('welcome', {message: 'Welcome!', nsData: namespaces})
-
-    // socket.on('messageToServer', (msg) => {
-    //     if(msg.includes('@server')){
-    //     socket.emit('messageFromServer', msg)
-    //     let replySend = false;
-    //     keywords.forEach((keyword) => {
-    //         keyword.triggerWords.forEach((word) => {
-    //             if(msg.toLowerCase().includes(word)){
-    //                 socket.emit('messageFromServer', keyword.message)
-    //                 replySend = true
-    //             }
-    //         })            
-    //     })
-    //     if(replySend === false){
-    //         socket.emit('messageFromServer', 'I do not understand your message, please try again')
-    //     }else{
-    //         console.log('reply send');
-    //     }
-    // }else{
-    //     const messageObject = {
-    //         username: 'Johnny',
-    //         image: 'https://www.flaticon.com/svg/static/icons/svg/21/21104.svg',
-    //         time: new Date(),
-    //         text: msg
-    //     }
-
-    //     io.emit('messageFromServer', messageObject)
-
-    // }
-    // })
-
-
-    // socket.on('keywordTrigger', (keywordsFromClient) => {
-    //     console.log(keywordsFromClient);
-    //     keywordsFromClient.forEach((keyword) => {
-    //         socket.emit('keywordReply', `Here is a link that may match your question http://localhost:3000`)
-    //     })
-    // })
 })
 
 namespaces.forEach((namespace) => {
@@ -86,6 +48,9 @@ namespaces.forEach((namespace) => {
         const nsRooms = namespace.rooms
         nsSocket.emit('nsRooms', nsRooms)
         nsSocket.join(nsRooms[0])
+        namespace.rooms.forEach((room) => {
+            updateUsersInRoom(namespace, room)
+        })
         nsSocket.on('joinRoom',(roomToJoin, numberOfUsersCallBack) => {
             const roomToLeave = Array.from(nsSocket.rooms)[1]
             nsSocket.leave(roomToLeave)
