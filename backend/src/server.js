@@ -50,6 +50,7 @@ namespaces.forEach((namespace) => {
         nsSocket.join(nsRooms[0])
         namespace.rooms.forEach((room) => {
             updateUsersInRoom(namespace, room)
+            
         })
         nsSocket.on('joinRoom',(roomToJoin, numberOfUsersCallBack) => {
             const roomToLeave = Array.from(nsSocket.rooms)[1]
@@ -60,12 +61,12 @@ namespaces.forEach((namespace) => {
             
         })
         nsSocket.on('messageToServer', (msg) => {
-        const messageObject = {
-            username: 'Johnny',
-            image: 'https://www.flaticon.com/svg/static/icons/svg/21/21104.svg',
-            time: new Date(),
-            text: ''
-        }
+            const messageObject = {
+                username: 'Johnny',
+                image: 'https://www.flaticon.com/svg/static/icons/svg/21/21104.svg',
+                time: new Date(),
+                text: ''
+            }
             if(msg.includes('@server')){
                 messageObject.text = msg
                 nsSocket.emit('messageFromServer', messageObject)
@@ -88,8 +89,10 @@ namespaces.forEach((namespace) => {
                     console.log('reply send');
                 }
             }else{
+                //Getting the room in which the message was send from by Socket
+                const roomTitle = Array.from(nsSocket.rooms)[1];
                 messageObject.text = msg
-                io.of(namespace.endpoint).emit('messageFromServer', messageObject)
+                io.of(namespace.endpoint).to(roomTitle).emit('messageFromServer', messageObject)
             }
         })
 
