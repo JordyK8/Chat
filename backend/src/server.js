@@ -37,7 +37,10 @@ app.post('/updateNamespace', (req, res) => {
     const newNamespace = new Namespace({
         title: req.body.namespaceTitle,
         endpoint: req.body.endpoint,
-        rooms: [req.body.room1],
+        rooms: [{
+            title:req.body.room1, 
+            chatHistory: []
+        }],
         image: req.body.image
     })
     newNamespace.save()
@@ -113,6 +116,9 @@ namespaces.then((namespaces) => {
                     const roomTitle = Array.from(nsSocket.rooms)[1];
                     messageObject.text = msg
                     io.of(namespace.endpoint).to(roomTitle).emit('messageFromServer', messageObject)
+                    Namespace.find({},(namespace)=>{
+                        console.log(namespace);
+                    })
                 }
             })
         })

@@ -3,7 +3,6 @@ function joinNS(endpoint, elem){
     while(roomList.firstChild){
         roomList.removeChild(roomList.firstChild)
     }
-    roomList
     elem.classList.add('selectedNS')
     if(nsSocket){
       nsSocket.close()
@@ -18,14 +17,16 @@ function joinNS(endpoint, elem){
         roomItem.innerText = data.users
       })
     nsSocket.on('nsRooms', (nsRooms) => {
-        joinRoom(nsRooms[0])
+        //Join toproom
+        joinRoom(nsRooms[0].title)
+        
         nsRooms.forEach(room => {
             roomList = document.querySelector('#rooms-list')
-            roomList.innerHTML += `<li class="room">${room}</li><img class="membersImage" src="https://cdn4.iconfinder.com/data/icons/browser-ui-small-size-optimized-set/154/user-login-human-man-body-512.png" width="15px" heigth="15px"/><span class="roomUsers" id="${room}room" class='numberOfMembers'></span></div>`
+            roomList.innerHTML += `<li class="room">${room.title}</li><img class="membersImage" src="https://cdn4.iconfinder.com/data/icons/browser-ui-small-size-optimized-set/154/user-login-human-man-body-512.png" width="15px" heigth="15px"/><span class="roomUsers" id="${room.title}room" class='numberOfMembers'></span></div>`
         });
         let roomNodes = document.getElementsByClassName('room')
         Array.from(roomNodes)[0].classList.add('selectedRoom')
-        
+        //Adding the listeners to all the rooms
         Array.from(roomNodes).forEach((room) => {
             room.addEventListener('click', (e) => {
                 Array.from(roomNodes).forEach((rm) => {
