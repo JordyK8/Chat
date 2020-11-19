@@ -14,12 +14,11 @@ function joinNS(endpoint, elem){
     nsSocket.on('welcome', (msg) => {
     })
     nsSocket.on('roomNumberUpdate', (data) => {
-        console.log('hallooooww???' , data);
         const roomItem = document.getElementById(`${data.room}room`)
-        console.log(roomItem);
         roomItem.innerText = data.users
       })
     nsSocket.on('nsRooms', (nsRooms) => {
+        joinRoom(nsRooms[0])
         nsRooms.forEach(room => {
             roomList = document.querySelector('#rooms-list')
             roomList.innerHTML += `<li class="room">${room}</li><img class="membersImage" src="https://cdn4.iconfinder.com/data/icons/browser-ui-small-size-optimized-set/154/user-login-human-man-body-512.png" width="15px" heigth="15px"/><span class="roomUsers" id="${room}room" class='numberOfMembers'></span></div>`
@@ -32,7 +31,6 @@ function joinNS(endpoint, elem){
                 Array.from(roomNodes).forEach((rm) => {
                     rm.classList.remove('selectedRoom')
                 })
-                console.log(room.innerText);
                 joinRoom(e.target.innerText)
                 room.classList.add('selectedRoom')
             })
@@ -76,7 +74,6 @@ function sendChatMessage(e){
 }
 
 function joinRoom(room){
-    nsSocket.emit('joinRoom', room, (newNumberOfMembers) => {
-        
-    })
+    nsSocket.emit('joinRoom', room)
+    const messages = document.querySelector('#message-list').innerHTML = ''
 }

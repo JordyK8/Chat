@@ -1,0 +1,32 @@
+{{>header}}
+<div>
+    <div id="namespace-management" class="container">
+        <div class="admin-content-box">
+            <div>
+                <ul class="admin-management-content-list">
+                    <li class="content"></li>
+                </ul>
+            </div>
+        </div>
+        <div class="update-content-container">
+            <form action="/updateNamespace" method="POST">
+                <input class="form-control" type="text" name="namespaceTitle" placeholder="Title" required>
+                <input class="form-control" type="text" name="endpoint" id="" placeholder="Endpoint" required>
+                <div id="room-form">
+                    <input class="form-control" type="text" name="room1" placeholder="Room name">
+                </div>
+                <button id="add-room-button">Add Room</button>
+                <input class="form-control" type="text" name="image" placeholder="Image-url" required>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>   
+</div>
+<script>
+    document.querySelector('#add-room-button').addEventListener('click', (e) => {
+        e.preventDefault()
+        let roomForm = document.querySelector('#room-form')
+        roomForm.innerHTML += `<input class="form-control" type="text" name="room-1" placeholder="Room name">`
+    })
+</script>
+{{>footer}}
