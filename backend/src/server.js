@@ -70,9 +70,9 @@ namespaces.then((namespaces) => {
         io.of(namespace.endpoint).on('connection', (nsSocket) => {
             const nsRooms = namespace.rooms
             nsSocket.emit('nsRooms', nsRooms)
-            // namespace.rooms.forEach((room) => {
-            //     updateUsersInRoom(namespace, room)
-            // })
+            namespace.rooms.forEach((room) => {
+                updateUsersInRoom(namespace, room.title)
+            })
             nsSocket.on('joinRoom',(roomToJoin) => {
                 if(Array.from(nsSocket.rooms).length > 1){
                     const roomToLeave = Array.from(nsSocket.rooms)[1]
@@ -84,7 +84,6 @@ namespaces.then((namespaces) => {
                 
             })
             nsSocket.on('messageToServer', (msg) => {
-                console.log(msg)
                 const messageObject = {
                     username: 'Johnny',
                     image: 'https://www.flaticon.com/svg/static/icons/svg/21/21104.svg',
@@ -125,6 +124,33 @@ namespaces.then((namespaces) => {
         })
     })
 })
+
+
+
+
+
+function updateUsersInRoom(namespace, room){
+    // all sockets in the "chat" namespace and in the "general" room
+const ids = io.of(namespace.endpoint).in(room).allSockets();
+    ids.then((ids) => {
+        let users = Array.from(ids).length
+        io.of(namespace.endpoint).emit('roomNumberUpdate', {room, users})
+    }).catch((error) => {
+        console.log(error);
+    })
+    
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 //OLD ONE SHOULD STILL WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -195,17 +221,3 @@ namespaces.then((namespaces) => {
 
 //     })
 // })
-
-
-function updateUsersInRoom(namespace, room){
-    // all sockets in the "chat" namespace and in the "general" room
-const ids = io.of(namespace.endpoint).in(room).allSockets();
-    ids.then((ids) => {
-        console.log(`${room} has ${Array.from(ids).length} members in it`);
-        let users = Array.from(ids).length
-        io.of(namespace.endpoint).emit('roomNumberUpdate', {room, users})
-    }).catch((error) => {
-        console.log(error);
-    })
-    
-}
