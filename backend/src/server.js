@@ -70,20 +70,21 @@ namespaces.then((namespaces) => {
         io.of(namespace.endpoint).on('connection', (nsSocket) => {
             const nsRooms = namespace.rooms
             nsSocket.emit('nsRooms', nsRooms)
-            nsSocket.join(nsRooms[0])
-            namespace.rooms.forEach((room) => {
-                updateUsersInRoom(namespace, room)
-                
-            })
-            nsSocket.on('joinRoom',(roomToJoin, numberOfUsersCallBack) => {
-                const roomToLeave = Array.from(nsSocket.rooms)[1]
-                nsSocket.leave(roomToLeave)
-                updateUsersInRoom(namespace, roomToLeave)
+            // namespace.rooms.forEach((room) => {
+            //     updateUsersInRoom(namespace, room)
+            // })
+            nsSocket.on('joinRoom',(roomToJoin) => {
+                if(Array.from(nsSocket.rooms).length > 1){
+                    const roomToLeave = Array.from(nsSocket.rooms)[1]
+                    nsSocket.leave(roomToLeave)
+                    updateUsersInRoom(namespace, roomToLeave)
+                }
                 nsSocket.join(roomToJoin)
                 updateUsersInRoom(namespace, roomToJoin)
                 
             })
             nsSocket.on('messageToServer', (msg) => {
+                console.log(msg)
                 const messageObject = {
                     username: 'Johnny',
                     image: 'https://www.flaticon.com/svg/static/icons/svg/21/21104.svg',

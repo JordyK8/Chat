@@ -12,12 +12,10 @@ function joinNS(endpoint, elem){
     nsSocket = io(`http://localhost:3000${endpoint}`)
     nsSocket.on('welcome', (msg) => {
     })
-    nsSocket.on('roomNumberUpdate', (data) => {
-        const roomItem = document.getElementById(`${data.room}room`)
-        roomItem.innerText = data.users
-      })
+    
     nsSocket.on('nsRooms', (nsRooms) => {
         //Join toproom
+        console.log(nsRooms[0].title);
         joinRoom(nsRooms[0].title)
         
         nsRooms.forEach(room => {
@@ -37,7 +35,13 @@ function joinNS(endpoint, elem){
             })
         })
     })
-   
+    
+    nsSocket.on('roomNumberUpdate', (data) => {
+        const roomItem = document.getElementById(`${data.room}room`)
+        console.log(`roomitem:  ${roomItem}`);
+        roomItem.innerText = data.users
+      })
+
     nsSocket.on('messageFromServer', (msg) => {
       const newMsg = buildHTML(msg)
     function buildHTML(msg){
@@ -70,8 +74,8 @@ function joinNS(endpoint, elem){
 function sendChatMessage(e){
     e.preventDefault()
     let message = document.querySelector('#chat-input').value
-    document.querySelector('#chat-input').value =''
-    nsSocket.emit('messageToServer', message)    
+    nsSocket.emit('messageToServer', message)
+    document.querySelector('#chat-input').value =''    
 }
 
 function joinRoom(room){
