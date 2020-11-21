@@ -17,9 +17,9 @@ function joinNS(endpoint, elem){
         //Join toproom
         console.log(nsRooms[0].title);
         joinRoom(nsRooms[0].title)
-        
+        let roomList = document.querySelector('#rooms-list')
+        roomList.innerHTML = ''
         nsRooms.forEach(room => {
-            roomList = document.querySelector('#rooms-list')
             roomList.innerHTML += `<li class="room">${room.title}</li><img class="membersImage" src="https://cdn4.iconfinder.com/data/icons/browser-ui-small-size-optimized-set/154/user-login-human-man-body-512.png" width="15px" heigth="15px"/><span class="roomUsers" id="${room.title}room" class='numberOfMembers'></span></div>`
         });
         let roomNodes = document.getElementsByClassName('room')

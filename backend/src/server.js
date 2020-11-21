@@ -28,7 +28,9 @@ const keywordsArray = ['hoi','doei']
 
 //Testing home route
 app.get('/', (req, res) => {
+   let namespaces = Namespace.find({})
     res.render('home', {title:'Home'})
+
 })
 app.get('/admin', (req, res) => {
     res.render('admin', {title: 'Admin'})
@@ -60,14 +62,17 @@ db()
 
 const socketio = require('socket.io')
 const io = socketio(expressServer)
-const namespaces = Namespace.find({})
-namespaces.then((namespaces) => {
+
+
     io.on('connection', (socket) => {
         console.log('a user connected');
+        const namespaces = Namespace.find({})
+        namespaces.then((namespaces) => {
         socket.emit('welcome', {message: 'Welcome!', nsData: namespaces})
-    })
+    
     namespaces.forEach((namespace) => {
         io.of(namespace.endpoint).on('connection', (nsSocket) => {
+            
             const nsRooms = namespace.rooms
             nsSocket.emit('nsRooms', nsRooms)
             namespace.rooms.forEach((room) => {
@@ -123,6 +128,7 @@ namespaces.then((namespaces) => {
             })
         })
     })
+})
 })
 
 
