@@ -1,6 +1,9 @@
 body{
     background-color: lightpink;
 }
+ul{
+    list-style: none;
+}
 #chat{
     position: absolute;
     bottom: 0;
@@ -13,6 +16,13 @@ body{
     border-radius: 3px;
     
     
+}
+button{
+    background-color: darkgray;
+    color: wheat;
+    border-radius: 3px;
+    font-size: 14px;
+    padding: 10px;
 }
 #chatbox{
     padding: 0px 10px;
@@ -32,7 +42,6 @@ body{
  
 }
 #message-list{
-    list-style: none;
     width: 100%;
     padding: 0;
     margin: 0;
@@ -163,4 +172,23 @@ body{
 .roomUsers{
     font-size: 12px;
     margin-left: 10px;
+}
+.hiddenForm{
+    display: none;
+}
+
+.liButton{
+    cursor: pointer;
+    border: 2px solid black;
+    border-radius: 3px;
+    font-size: 25px;
+    width: 200px;
+    text-align: center;
+    padding: 15px;
+    margin: 20px;
+    background-color: wheat;
+}
+.buttonSection{
+    margin-top: auto;
+    margin-bottom: auto;
 }

@@ -1,32 +1,65 @@
 {{>header}}
+<h2>Namespaces</h2>
 <div>
+    <div class="errorMessage">
+        <p>{{errorMessage.text}}</p>
+    </div>
     <div id="namespace-management" class="container">
         <div class="admin-content-box">
             <div>
                 <ul class="admin-management-content-list">
-                    <li class="content"></li>
+                    {{#each data}}
+                    <div class="row">
+                        <div class="col-6">
+                        <li class="liButton">{{this.title}}</li>
+                        </div>
+                        <div class="col-3 buttonSection">
+                        <button name="{{this.title}}" class="editButton">Edit</button>
+                        <button name="{{this.title}}" class="addRoomButton">Add Room</button>
+                        </div>
+                        <div class="col-3 buttonSection">
+                            <form action="/deleteNamespace" method="POST">
+                            <button name="{{this.title}}" type='submit' class="deleteButton" value="{{this.title}}">Delete</button>
+                            <input type="hidden" name="namespaceTitle" value="{{this.title}}">
+                        </form>
+                        </div>
+                        <div class="hiddenForm" id="{{this.title}}form">
+                            <form action="/updateNamespace" method="POST">
+                                <input type="hidden" name="originalNamespaceTitle" value="{{this.title}}">
+                                <input type="text" class="form-control" name="namespaceTitle" id=""
+                                    value="{{this.title}}">
+                                    <input type="hidden" name="namespaceTitle" value="{{this.title}}">
+                                <input type="text" class="form-control" name="image" id="" value="{{this.image}}">
+                                <button type="submit">Save</button>
+                                <button type="menu" name="{{this.title}}" part="ns" class="cancleButton">Cancle</button>
+
+                            </form>
+                        </div>
+                        <div class="hiddenForm" id="{{this.title}}roomform">
+                            <form action="/addRoom" method="POST">
+                                <input type="text" class="form-control" name="roomTitle" placeholder="Room Title">
+                                <input type="hidden" name="namespaceTitle" value='{{this.title}}'>
+                                <button type="submit">Save</button>
+                                <button type="menu" name="{{this.title}}" part="rm"class="cancleButton">Cancle</button>
+                            </form>
+                        </div>
+                    </div>
+                    {{/each}}
+                    <li class="liButton" id="addNS">+</li>
                 </ul>
             </div>
         </div>
-        <div class="update-content-container">
-            <form action="/updateNamespace" method="POST">
-                <input class="form-control" type="text" name="namespaceTitle" placeholder="Title" required>
-                <input class="form-control" type="text" name="endpoint" id="" placeholder="Endpoint" required>
-                <div id="room-form">
-                    <input class="form-control" type="text" name="room1" placeholder="Room name">
-                </div>
-                <button id="add-room-button">Add Room</button>
+        <div id="addNSform" class="hiddenForm">
+            <form action="/addNamespace" method="POST">
+                <input class="form-control" type="text" name="namespaceTitle" placeholder="Title"
+                    pattern="[a-zA-Z0-9]+[a-zA-Z0-9 ]+" required>
                 <input class="form-control" type="text" name="image" placeholder="Image-url" required>
                 <button type="submit">Submit</button>
+                <button type="menu" name="{{this.title}}" part="addn"class="cancleButton">Cancle</button>
+
             </form>
         </div>
-    </div>   
+    </div>
 </div>
-<script>
-    document.querySelector('#add-room-button').addEventListener('click', (e) => {
-        e.preventDefault()
-        let roomForm = document.querySelector('#room-form')
-        roomForm.innerHTML += `<input class="form-control" type="text" name="room-1" placeholder="Room name">`
-    })
-</script>
+<script src="/scripts/adminScript.js"></script>
 {{>footer}}

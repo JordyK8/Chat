@@ -29,25 +29,105 @@ const keywordsArray = ['hoi','doei']
 //Testing home route
 app.get('/', (req, res) => {
    let namespaces = Namespace.find({})
-    res.render('home', {title:'Home'})
-
+    namespaces.then((namespaces)=>{
+        res.render('home', {title:'Home'})
+    })
 })
 app.get('/admin', (req, res) => {
-    res.render('admin', {title: 'Admin'})
-})
-app.post('/updateNamespace', (req, res) => {
-    const newNamespace = new Namespace({
-        title: req.body.namespaceTitle,
-        endpoint: req.body.endpoint,
-        rooms: [{
-            title:req.body.room1, 
-            chatHistory: []
-        }],
-        image: req.body.image
+    let namespaces = Namespace.find({})
+    namespaces.then((namespaces)=>{
+        res.render('admin', {title: 'Admin', data: namespaces, errorMessage:{text:'',code:''}})
+    }).catch((error) => {
+        console.log(error);
     })
-    newNamespace.save()
-    res.redirect('admin')
 })
+app.post('/addNamespace', (req, res) => {
+    const namespaceExist = Namespace.find({title: req.body.namespaceTitle})
+    namespaceExist.then((nsFound)=>{
+        if(nsFound[0]){
+            let namespaces = Namespace.find({})
+            namespaces.then((namespaces)=>{
+                res.render('admin', 
+                {
+                    title: 'Admin', 
+                    data: namespaces, 
+                    errorMessage: 
+                    {
+                        code: '',
+                        text: 'A Namespace with this title already exist, please choose a different title for you Namespace.',
+                    }
+                })
+            }).catch((error) => {
+                console.log(error);
+            });
+        }else{
+            let endpoint = `/${req.body.namespaceTitle.toLowerCase()}`
+            endpoint = endpoint.replace(/\s/g, '')
+            endpoint =`/${endpoint}`
+        const newNamespace = new Namespace({
+            title: req.body.namespaceTitle,
+            endpoint,
+            rooms: [{
+                title: 'General', 
+                chatHistory: []
+            },
+            {
+                title: 'News',
+                chatHistory: []
+            }
+            ],
+            image: req.body.image
+        })
+        newNamespace.save()
+    
+    res.redirect('/admin')
+
+        }
+    });
+});
+
+app.post('/deleteNamespace', (req, res) => {
+    Namespace.deleteOne({title: req.body.namespaceTitle})
+    .then(()=>{
+
+    }).catch((error) => {
+        console.log(error);
+    })
+    res.redirect('/admin')
+})
+
+app.post('/updateNamespace',(req, res) => {
+    let endpoint = `${req.body.namespaceTitle[0].toLowerCase()}`
+    endpoint = endpoint.replace(/[^a-zA-Z ]/g, "")
+    endpoint =`/${endpoint}`
+    const updateNamespace = Namespace.findOneAndUpdate({title: req.body.originalNamespaceTitle},{title: req.body.namespaceTitle[0],image: req.body.image[0], endpoint})
+    updateNamespace.then(() => {
+        res.redirect('/admin')
+    }).catch((error) => {
+        console.log(error);
+        res.redirect('/admin')
+    })
+})
+app.post('/addRoom', (req, res) => {
+    let newRoom = {
+        title: req.body.roomTitle,
+        chatHistory: []
+    }
+    const updatedNS = Namespace.findOneAndUpdate({title: req.body.namespaceTitle}, { $push: { rooms: newRoom } })
+    updatedNS.then((
+        res.redirect('/admin')
+    ))
+    .catch((error) => {
+        console.log(error);
+        res.redirect('/admin')
+    })
+})
+
+
+
+
+
+
 const expressServer = app.listen(PORT, () => {
     console.log(`Server is listening on port: ${PORT}`)
 })
@@ -59,6 +139,7 @@ const Room = require('../utils/db/Room')
 const ChatMessage = require('../utils/db/ChatMessage')
 db()
 
+//SOCKET IO
 
 const socketio = require('socket.io')
 const io = socketio(expressServer)
