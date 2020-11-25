@@ -144,8 +144,14 @@ db()
 const socketio = require('socket.io')
 const io = socketio(expressServer)
 
+io.on('disconnect', (socket) => {
+    const roomToLeave = Array.from(socket.rooms)[1]
+    socket.leave(roomToLeave)
+    socket.close()
+})
 
     io.on('connection', (socket) => {
+        
         console.log('a user connected');
         const namespaces = Namespace.find({})
         namespaces.then((namespaces) => {
@@ -153,11 +159,17 @@ const io = socketio(expressServer)
     
     namespaces.forEach((namespace) => {
         io.of(namespace.endpoint).on('connection', (nsSocket) => {
-            
+            nsSocket.removeAllListeners()
             const nsRooms = namespace.rooms
             nsSocket.emit('nsRooms', nsRooms)
             namespace.rooms.forEach((room) => {
                 updateUsersInRoom(namespace, room.title)
+            })
+            io.of(namespace.endpoint).on('disconnect', (nsSocket) => {
+                console.log('disconnected from: ', namespace.title);
+                const roomToLeave = Array.from(nsSocket.rooms)[1]
+                nsSocket.leave(roomToLeave)
+                nsSocket.close()
             })
             nsSocket.on('joinRoom',(roomToJoin) => {
                 if(Array.from(nsSocket.rooms).length > 1){
@@ -207,6 +219,7 @@ const io = socketio(expressServer)
                     })
                 }
             })
+            
         })
     })
 })
