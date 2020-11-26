@@ -25,12 +25,10 @@ hbs.registerPartials(partialsPath)
 
 //Testing home route
 app.get('/', (req, res) => {
-    let namespaces = Namespace.find({})
-    namespaces.then((namespaces) => {
-        res.render('home', {
-            title: 'Home'
-        })
+    res.render('home', {
+        title: 'Home'
     })
+    
 })
 
 //Routes setup
@@ -92,7 +90,7 @@ io.on('connection', (socket) => {
                     }
                     nsSocket.join(roomToJoin)
                     updateUsersInRoom(namespace, roomToJoin)
-
+                    nsSocket.emit('chatHistory',namespace.)
                 })
                 nsSocket.on('messageToServer', (msg) => {
                     // Inserting nessacery files and data
@@ -129,10 +127,15 @@ io.on('connection', (socket) => {
                         //Getting the room in which the message was send from by Socket
                         const roomTitle = Array.from(nsSocket.rooms)[1];
                         messageObject.text = msg
-                        io.of(namespace.endpoint).to(roomTitle).emit('messageFromServer', messageObject)
-                        Namespace.find({}, (namespace) => {
-                            console.log(namespace);
+                        index = namespace.rooms.findIndex(x => x.title === roomTitle)
+                        namespace.rooms[index].chatHistory.push(messageObject);
+                        namespace.save()
+                        let pushChatHistory = Namespace.findOneAndUpdate({title: namespace.title},{rooms: namespace.rooms})
+                        pushChatHistory.then(()=>{
+                        }).catch((error) =>{
+                            console.log(error);
                         })
+                        io.of(namespace.endpoint).to(roomTitle).emit('messageFromServer', messageObject)
                     }
                 })
 
