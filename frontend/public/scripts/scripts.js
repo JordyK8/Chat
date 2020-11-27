@@ -1,7 +1,7 @@
 
   const socket = io('http://localhost:3000')
   let nsSocket = ''
-
+  
   const nsList = document.querySelector('#namespace-list')
 // Getting the namespaces and start-message on connection
   socket.on('welcome', (data) => {
@@ -21,6 +21,8 @@
         })
       })
       joinNS(namespacesArray[0].getAttribute('ns'),namespacesArray[0])
+      console.log(socket.listeners('connect'))
   })
- 
+  
 
+ 

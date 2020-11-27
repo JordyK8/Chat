@@ -59,7 +59,10 @@ io.on('disconnect', (socket) => {
     socket.leave(roomToLeave)
     socket.close()
 })
+let checkConnection = 0
 io.on('connection', (socket) => {
+    checkConnection++
+    console.log('triggered');
     console.log('a user connected');
     const namespaces = Namespace.find({})
     namespaces.then((namespaces) => {
@@ -67,20 +70,30 @@ io.on('connection', (socket) => {
             message: 'Welcome!',
             nsData: namespaces
         })
+        socket.once('disconnect', (socket) => {
+            socket.removeAllListeners()
+            const roomToLeave = Array.from(socket.rooms)[1]
+            socket.leave(roomToLeave)
+            socket.close()
+        })
         namespaces.forEach((namespace) => {
             socket.removeAllListeners()
+            // For some reason the connections are stacking on refresh. The checkConnection is to make sure only once the listeners run for a connection.
+            
             io.of(namespace.endpoint).on('connection', (nsSocket) => {
+                
+            if(checkConnection > 1){
+                
                 nsSocket.removeAllListeners()
                 const nsRooms = namespace.rooms
                 nsSocket.emit('nsRooms', nsRooms)
                 namespace.rooms.forEach((room) => {
                     updateUsersInRoom(namespace, room.title)
                 })
-                io.of(namespace.endpoint).on('disconnect', (nsSocket) => {
+                nsSocket.on('disconnect', (reason) => {
+                    nsSocket.removeAllListeners()
                     console.log('disconnected from: ', namespace.title);
-                    const roomToLeave = Array.from(nsSocket.rooms)[1]
-                    nsSocket.leave(roomToLeave)
-                    nsSocket.close()
+                    nsSocket.disconnect()
                 })
                 nsSocket.on('joinRoom', (roomToJoin) => {
                     if (Array.from(nsSocket.rooms).length > 1) {
@@ -90,9 +103,13 @@ io.on('connection', (socket) => {
                     }
                     nsSocket.join(roomToJoin)
                     updateUsersInRoom(namespace, roomToJoin)
-                    nsSocket.emit('chatHistory',namespace.)
+                    let index = namespace.rooms.findIndex(x => x.title === roomToJoin)
+                    const chatHistory = namespace.rooms[index].chatHistory
+                    nsSocket.emit('chatHistory', chatHistory)
+                    
                 })
                 nsSocket.on('messageToServer', (msg) => {
+                    console.log(msg);
                     // Inserting nessacery files and data
                     const keywords = require('../utils/db/keywordMapping')
                     const keywordsArray = ['hoi', 'doei']
@@ -127,7 +144,7 @@ io.on('connection', (socket) => {
                         //Getting the room in which the message was send from by Socket
                         const roomTitle = Array.from(nsSocket.rooms)[1];
                         messageObject.text = msg
-                        index = namespace.rooms.findIndex(x => x.title === roomTitle)
+                        let index = namespace.rooms.findIndex(x => x.title === roomTitle)
                         namespace.rooms[index].chatHistory.push(messageObject);
                         namespace.save()
                         let pushChatHistory = Namespace.findOneAndUpdate({title: namespace.title},{rooms: namespace.rooms})
@@ -138,7 +155,7 @@ io.on('connection', (socket) => {
                         io.of(namespace.endpoint).to(roomTitle).emit('messageFromServer', messageObject)
                     }
                 })
-
+            }
             })
         })
     })
