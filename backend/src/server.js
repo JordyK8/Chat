@@ -3,45 +3,14 @@ const app = express()
 const path = require('path')
 const hbs = require('hbs')
 
-// Set up port for local or developed enviroment
-const PORT = process.env.PORT || 3000
-
 // Configuring express to handle json
 app.use(express.json())
-app.use(express.urlencoded({
-    extended: true
-}));
+app.use(express.urlencoded({extended: true}));
 
 // Configuring paths to serve up staticly
 const publicDirectoryPath = path.join(__dirname, '../../frontend/public')
 const viewsPath = path.join(__dirname, '../../frontend/templates/views')
 const partialsPath = path.join(__dirname, '../../frontend/templates/partials')
-
-//Setting up view enigne
-app.use(express.static(publicDirectoryPath))
-app.set('view engine', 'hbs')
-app.set('views', viewsPath)
-hbs.registerPartials(partialsPath)
-
-//Testing home route
-app.get('/', (req, res) => {
-    res.render('home', {
-        title: 'Home'
-    })
-    
-})
-
-//Routes setup
-app.use('/admin', require('../utils/api/admin'))
-app.use('/addNamespace', require('../utils/api/namespace'))
-app.use('/updateNamespace', require('../utils/api/updateNamespace'))
-app.use('/deleteNamespace', require('../utils/api/deleteNamespace'))
-app.use('/addRoom', require('../utils/api/addRoom'))
-
-// Server Listener
-const expressServer = app.listen(PORT, () => {
-    console.log(`Server is listening on port: ${PORT}`)
-})
 
 //DB
 const db = require('../utils/db/db')
@@ -50,132 +19,29 @@ const Room = require('../utils/db/Room')
 const ChatMessage = require('../utils/db/ChatMessage')
 db()
 
+// Set up port for local or developed enviroment
+const PORT = process.env.PORT || 3000
+
+//Setting up view enigne
+app.use(express.static(publicDirectoryPath))
+app.set('view engine', 'hbs')
+app.set('views', viewsPath)
+hbs.registerPartials(partialsPath)
+
+//Routes setup
+app.get('/', (req, res) => {res.render('home', {title: 'Home'})})
+app.use('/admin', require('../utils/api/admin'))
+app.use('/addNamespace', require('../utils/api/namespace'))
+app.use('/updateNamespace', require('../utils/api/updateNamespace'))
+app.use('/deleteNamespace', require('../utils/api/deleteNamespace'))
+app.use('/addRoom', require('../utils/api/addRoom'))
+
+// Server Listener
+const expressServer = app.listen(PORT, () => {console.log(`Server is listening on port: ${PORT}`)})
+
+
 //SOCKET IO
 const socketio = require('socket.io')
 const io = socketio(expressServer)
-
-io.on('disconnect', (socket) => {
-    const roomToLeave = Array.from(socket.rooms)[1]
-    socket.leave(roomToLeave)
-    socket.close()
-})
-let checkConnection = 0
-io.on('connection', (socket) => {
-    checkConnection++
-    console.log('triggered');
-    console.log('a user connected');
-    const namespaces = Namespace.find({})
-    namespaces.then((namespaces) => {
-        socket.emit('welcome', {
-            message: 'Welcome!',
-            nsData: namespaces
-        })
-        socket.once('disconnect', (socket) => {
-            socket.removeAllListeners()
-            const roomToLeave = Array.from(socket.rooms)[1]
-            socket.leave(roomToLeave)
-            socket.close()
-        })
-        namespaces.forEach((namespace) => {
-            socket.removeAllListeners()
-            // For some reason the connections are stacking on refresh. The checkConnection is to make sure only once the listeners run for a connection.
-            
-            io.of(namespace.endpoint).on('connection', (nsSocket) => {
-                
-            if(checkConnection > 1){
-                
-                nsSocket.removeAllListeners()
-                const nsRooms = namespace.rooms
-                nsSocket.emit('nsRooms', nsRooms)
-                namespace.rooms.forEach((room) => {
-                    updateUsersInRoom(namespace, room.title)
-                })
-                nsSocket.on('disconnect', (reason) => {
-                    nsSocket.removeAllListeners()
-                    console.log('disconnected from: ', namespace.title);
-                    nsSocket.disconnect()
-                })
-                nsSocket.on('joinRoom', (roomToJoin) => {
-                    if (Array.from(nsSocket.rooms).length > 1) {
-                        const roomToLeave = Array.from(nsSocket.rooms)[1]
-                        nsSocket.leave(roomToLeave)
-                        updateUsersInRoom(namespace, roomToLeave)
-                    }
-                    nsSocket.join(roomToJoin)
-                    updateUsersInRoom(namespace, roomToJoin)
-                    let index = namespace.rooms.findIndex(x => x.title === roomToJoin)
-                    const chatHistory = namespace.rooms[index].chatHistory
-                    nsSocket.emit('chatHistory', chatHistory)
-                    
-                })
-                nsSocket.on('messageToServer', (msg) => {
-                    console.log(msg);
-                    // Inserting nessacery files and data
-                    const keywords = require('../utils/db/keywordMapping')
-                    const keywordsArray = ['hoi', 'doei']
-                    const messageObject = {
-                        username: 'Johnny',
-                        image: 'https://www.flaticon.com/svg/static/icons/svg/21/21104.svg',
-                        time: new Date(),
-                        text: ''
-                    }
-                    if (msg.includes('@server')) {
-                        messageObject.text = msg
-                        nsSocket.emit('messageFromServer', messageObject)
-                        let replySend = false;
-                        keywords.forEach((keyword) => {
-                            keyword.triggerWords.forEach((word) => {
-                                if (msg.toLowerCase().includes(word)) {
-                                    messageObject.text = keyword.message
-                                    messageObject.username = 'Server'
-                                    nsSocket.emit('messageFromServer', messageObject)
-                                    replySend = true
-                                }
-                            })
-                        })
-                        if (replySend === false) {
-                            messageObject.text = 'I do not understand your message, please try again'
-                            messageObject.username = 'Server'
-                            nsSocket.emit('messageFromServer', messageObject)
-                        } else {
-                            console.log('reply send');
-                        }
-                    } else {
-                        //Getting the room in which the message was send from by Socket
-                        const roomTitle = Array.from(nsSocket.rooms)[1];
-                        messageObject.text = msg
-                        let index = namespace.rooms.findIndex(x => x.title === roomTitle)
-                        namespace.rooms[index].chatHistory.push(messageObject);
-                        namespace.save()
-                        let pushChatHistory = Namespace.findOneAndUpdate({title: namespace.title},{rooms: namespace.rooms})
-                        pushChatHistory.then(()=>{
-                        }).catch((error) =>{
-                            console.log(error);
-                        })
-                        io.of(namespace.endpoint).to(roomTitle).emit('messageFromServer', messageObject)
-                    }
-                })
-            }
-            })
-        })
-    })
-})
-
-
-
-
-
-function updateUsersInRoom(namespace, room) {
-    // all sockets in the "chat" namespace and in the "general" room
-    const ids = io.of(namespace.endpoint).in(room).allSockets();
-    ids.then((ids) => {
-        let users = Array.from(ids).length
-        io.of(namespace.endpoint).emit('roomNumberUpdate', {
-            room,
-            users
-        })
-    }).catch((error) => {
-        console.log(error);
-    })
-
-}
+const socketApp = require('./socketio')
+socketApp(io)
