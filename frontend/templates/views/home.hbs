@@ -1,5 +1,19 @@
 {{>header}}
 <section id="chat">
+    <div id="chat-menu">
+        <svg id="chat-button-open" class="chat-menu-button" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+        </svg>
+        <svg id="chat-button-minimize" class="chat-menu-button" width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-dash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
+        </svg>
+        <svg id="chat-button-smallscreen" class="chat-menu-button" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrows-angle-contract" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.172 15.828a.5.5 0 0 0 .707 0l4.096-4.096V14.5a.5.5 0 1 0 1 0v-3.975a.5.5 0 0 0-.5-.5H1.5a.5.5 0 0 0 0 1h2.768L.172 15.121a.5.5 0 0 0 0 .707zM15.828.172a.5.5 0 0 0-.707 0l-4.096 4.096V1.5a.5.5 0 1 0-1 0v3.975a.5.5 0 0 0 .5.5H14.5a.5.5 0 0 0 0-1h-2.768L15.828.879a.5.5 0 0 0 0-.707z"/>
+        </svg>
+        <svg id="chat-button-fullscreen" class="chat-menu-button" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrows-angle-expand" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707z"/>
+        </svg>
+    </div>
     <div id="rooms-container">
         <ul id="rooms-list">
         </ul>
@@ -35,4 +49,51 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="/scripts/joinNs.js"></script>
 <script src="/scripts/scripts.js"></script>
+<script>
+    const chatButtonMini = document.getElementById('chat-button-minimize')
+    const chatButtonOpen = document.getElementById('chat-button-open')
+    const chatButtonSmallscreen = document.getElementById('chat-button-smallscreen')
+    const chatButtonFullscreen = document.getElementById('chat-button-fullscreen')
+    const chatWindow = document.getElementById('chat')
+    const chatMenu = document.getElementById('chat-menu')
+    
+    chatButtonMini.addEventListener('click', (e) => {
+        e.preventDefault()
+        chatWindow.style.height = '30px'
+        chatWindow.style.width = '63px'
+        chatMenu.style.width = '58px'
+        e.target.style.display = 'none'
+        chatButtonOpen.style.display = 'inline'
+    })
+    chatButtonOpen.addEventListener('click', (e) => {
+        e.preventDefault()
+        chatWindow.style.height = '475px'
+        chatWindow.style.width = '450px'
+        chatMenu.style.width = '100%'
+        e.target.style.display = 'none'
+        chatButtonMini.style.display = 'inline'
+        chatButtonOpen.style.display = 'none' 
+        chatButtonSmallscreen.style.display = 'inline'
+    })
+    chatButtonSmallscreen.addEventListener('click', (e) => {
+        e.preventDefault()
+        chatWindow.style.height = '475px'
+        chatWindow.style.width = '450px'
+        e.target.style.display = 'none'
+        chatMenu.style.width = '100%'
+        chatButtonFullscreen.style.display = 'inline'
+        chatButtonOpen.style.display = 'none'
+        chatButtonSmallscreen.style.display = 'inline'
+        
+    })
+    chatButtonFullscreen.addEventListener('click', (e) => {
+        e.preventDefault()
+        chatWindow.style.height = '100%'
+        chatWindow.style.width = '100%'
+        e.target.style.display = 'none'
+        chatButtonSmallscreen.style.display = 'inline'
+    })
+
+
+</script>
 {{>footer}}

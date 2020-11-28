@@ -3,12 +3,12 @@ body{
 }
 ul{
     list-style: none;
-}
+} 
 #chat{
-    position: absolute;
+    position: fixed;
     bottom: 0;
     right: 0;
-    height: 425px;
+    height: 475px;
     width: 450px;
     margin: 0 auto;
     background-color: #333333;
@@ -17,6 +17,33 @@ ul{
     
     
 }
+#chat-button-open{
+    display: none;
+}
+#chat-button-smallscreen{
+    display: none;
+}
+
+#chat-menu{
+    width: 100%;
+    background-color: lightgray;
+    display: flex;
+    justify-content: flex-end;
+}
+.chat-menu-button{
+    margin: 2px;
+    border: 1px solid black;
+    height: 1.5em;
+    width: 1.5em;
+    padding: 3px;
+    cursor: pointer;
+}
+.chat-menu-button:hover{
+    transform: scale(1.2);
+    background-color: darkgrey;
+    color: white;
+}
+
 button{
     background-color: darkgray;
     color: wheat;
