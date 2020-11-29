@@ -35,6 +35,10 @@ app.use('/addNamespace', require('../utils/api/namespace'))
 app.use('/updateNamespace', require('../utils/api/updateNamespace'))
 app.use('/deleteNamespace', require('../utils/api/deleteNamespace'))
 app.use('/addRoom', require('../utils/api/addRoom'))
+app.use('/signup', require('../utils/api/signup'))
+
+
+
 
 // Server Listener
 const expressServer = app.listen(PORT, () => {console.log(`Server is listening on port: ${PORT}`)})
