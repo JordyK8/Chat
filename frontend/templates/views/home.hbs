@@ -40,8 +40,10 @@
             </ul>
         </div>
            <form id="chat-form">
-                <input id="chat-input" type="text" placeholder="Type your message...">
-                <button type="submit" id="chat-button" class="btn btn-secondary">Send</button>
+               <div id="chat-layout">
+                    <input id="chat-input" type="text" placeholder="Type your message...">
+                    <button type="submit" id="chat-button" class="btn btn-secondary">Send</button>
+                </div
             </form>
     </div>
 </section>
@@ -49,51 +51,5 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="/scripts/joinNs.js"></script>
 <script src="/scripts/scripts.js"></script>
-<script>
-    const chatButtonMini = document.getElementById('chat-button-minimize')
-    const chatButtonOpen = document.getElementById('chat-button-open')
-    const chatButtonSmallscreen = document.getElementById('chat-button-smallscreen')
-    const chatButtonFullscreen = document.getElementById('chat-button-fullscreen')
-    const chatWindow = document.getElementById('chat')
-    const chatMenu = document.getElementById('chat-menu')
-    
-    chatButtonMini.addEventListener('click', (e) => {
-        e.preventDefault()
-        chatWindow.style.height = '30px'
-        chatWindow.style.width = '63px'
-        chatMenu.style.width = '58px'
-        e.target.style.display = 'none'
-        chatButtonOpen.style.display = 'inline'
-    })
-    chatButtonOpen.addEventListener('click', (e) => {
-        e.preventDefault()
-        chatWindow.style.height = '475px'
-        chatWindow.style.width = '450px'
-        chatMenu.style.width = '100%'
-        e.target.style.display = 'none'
-        chatButtonMini.style.display = 'inline'
-        chatButtonOpen.style.display = 'none' 
-        chatButtonSmallscreen.style.display = 'inline'
-    })
-    chatButtonSmallscreen.addEventListener('click', (e) => {
-        e.preventDefault()
-        chatWindow.style.height = '475px'
-        chatWindow.style.width = '450px'
-        e.target.style.display = 'none'
-        chatMenu.style.width = '100%'
-        chatButtonFullscreen.style.display = 'inline'
-        chatButtonOpen.style.display = 'none'
-        chatButtonSmallscreen.style.display = 'inline'
-        
-    })
-    chatButtonFullscreen.addEventListener('click', (e) => {
-        e.preventDefault()
-        chatWindow.style.height = '100%'
-        chatWindow.style.width = '100%'
-        e.target.style.display = 'none'
-        chatButtonSmallscreen.style.display = 'inline'
-    })
-
-
-</script>
+<script src="/scripts/chatMenu.js"></script>
 {{>footer}}
