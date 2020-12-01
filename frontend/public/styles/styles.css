@@ -249,6 +249,7 @@ button{
     padding: 20px; 
     background-color: darkorchid;
     border: 3px solid black;
+    display: none;
 }
 .google-button{
     background-color: darksalmon;

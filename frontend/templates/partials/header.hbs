@@ -47,20 +47,23 @@
 
 <div id="login-form" class="authentication-form">
   <h3>Login</h3>
-  <form action="/login" method="POST">
+  <form action="/user" method="GET">
     <input class="form-control" type="email" name="email" placeholder="Email address" required>
-    <input class="form-control" type="password" name="password" id="" placeholder="Password" required>
-    <button type="submit">Login</button>  
+    <input class="form-control" type="password" name="password" placeholder="Password" required>
+    <button type="submit">Login</button> 
+    <button class="cancle-button" type="button">Cancle</button>  
+ 
   </form>
     <span><a class="google-button" href="/loginGoogle"> Google Login</a></span>
 </div>
 <div id="signup-form" class="authentication-form">
   <h3>Sign Up</h3>
-  <form action="/signup" method="POST">
+  <form action="/user" method="POST">
     <input class="form-control" type="text" name="username" placeholder="Username" required>
     <input class="form-control" type="email" name="email" placeholder="Email address" required>
-    <input class="form-control" type="password" name="password" id="" placeholder="Password" required>
+    <input class="form-control" type="password" name="password" placeholder="Password" required>
     <button type="submit">Sign Up</button>
+    <button class="cancle-button" type="button">Cancle</button>
   </form>
     <span><a class="google-button" href="/signupGoogle"> Google Signup</a></span>
 </div>

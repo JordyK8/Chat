@@ -13,8 +13,11 @@
   "author": "Jordy Kokelaar",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.0",
+    "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
     "hbs": "^4.1.1",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.15",
     "postman-request": "^2.88.1-postman.27",
     "socket.io": "^3.0.0"
