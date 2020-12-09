@@ -3,9 +3,8 @@ const router = express.Router()
 const Namespace = require('../db/Namespace')
 
 
-router.post('/', 
+router.post('/create', 
 async (req, res) => {
-
     try{
         const namespaceExist = await Namespace.find({title: req.body.namespaceTitle})
         if(namespaceExist[0]){
@@ -44,6 +43,30 @@ async (req, res) => {
     catch(error){
         console.log(error);
     }
+})
+
+router.post('/update', 
+async (req, res) => {
+    try{
+        let endpoint = `${req.body.namespaceTitle[0].toLowerCase()}`
+        endpoint = endpoint.replace(/[^a-zA-Z ]/g, "")
+        endpoint =`/${endpoint}`
+        await Namespace.findOneAndUpdate({title: req.body.originalNamespaceTitle},{title: req.body.namespaceTitle[0],image: req.body.image[0], endpoint})
+        res.redirect('/admin')
+    }catch(error){
+        console.log(error);
+        res.redirect('/admin')
+    }
+})
+
+router.post('/delete', 
+async (req, res) => {
+    try{
+        await Namespace.deleteOne({title: req.body.namespaceTitle})
+    }catch(error){
+        console.log(error);
+    }
+    res.redirect('/admin')
 })
 
 module.exports = router

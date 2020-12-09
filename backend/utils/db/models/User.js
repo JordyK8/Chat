@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
-const salt = 10;
 const jwt = require('jsonwebtoken');
 const SECRET = process.env.SECRET || 'mysecret'
 
@@ -33,35 +32,47 @@ const userSchema = new mongoose.Schema({
 // Salting and Hashing the PW before saving
 userSchema.pre('save', async function (next) {
     const user = this
-    if(user.isModified('password')){
-        bcrypt.genSalt(salt, function(err, salt){
-            if(err) return next(err)
-            bcrypt.hash(user.password ,salt, function(err, hash) {
-                if(err) return next(err)
-                user.password = hashuser.password2 = hash
-                next()
-            })
-        })
-    }else{
-        next()
-    }
+    const hash = await bcrypt.hash(user.password ,10)
+    user.password = hash
+    user.password2 = hash
 })
 // Login compare password method
-userSchema.methods.comparepassword = function(password,cb){
-    bcrypt.compare(password,this.password,function(err,isMatch){
+
+userSchema.methods.comparepassword = function(password, cb){
+    bcrypt.compare(password,this.password,function(err, isMatch){
         if(err) return cb(next);
-        cb(null,isMatch);
+        cb(null, isMatch);
     });
 }
 //Login assign Token function
 userSchema.methods.generateToken = function(cb){
-    var user =this;
-    var token=jwt.sign(user._id.toHexString(),confiq.SECRET);
+    var user = this;
+    var token=jwt.sign(user._id.toHexString(), SECRET);
 
-    user.token=token;
-    user.save(function(err,user){
+    user.token = token;
+    user.save(function(err, user){
         if(err) return cb(err);
-        cb(null,user);
+        cb(null, user);
+    })
+}
+//Find Token function
+userSchema.statics.findByToken = function(token, cb){
+    var user = this;
+
+    jwt.verify(token, SECRET, function(err, decode){
+        user.findOne({"_id": decode, "token":token},function(err, user){
+            if(err) return cb(err);
+            cb(null, user);
+        })
+    })
+}
+//Delete Token
+userSchema.methods.deleteToken = function(token, cb){
+    var user = this;
+
+    user.update({$unset : {token :1}},function(err, user){
+        if(err) return cb(err);
+        cb(null, user);
     })
 }
 
