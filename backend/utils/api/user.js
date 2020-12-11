@@ -3,47 +3,31 @@ const router = express.Router()
 const User = require('../db/models/User')
 const {auth} =require('../auth');
 
+
 router.post('/register', async (req, res) => {
-    const newUser = await new User(req.body)
-    if(newUser.password != newUser.password2)return res.status(400).json({message: "password not match"});
-    const user = await User.findOne({email: newUser.email})
-    if(user) return res.status(400).json({auth : false, message: 'email exist'})
-        newUser.save((err, doc) => {
-            if(err){ return res.status(400).json({ succes: false})}
-            res.status(200).json({
-                succes: true,
-                user: doc
-            })
-        })
-    })
+    const user = new User(req.body)
+    const userExist = await User.findOne({email: user.email})
+    try{
+        if(userExist) return res.status(400).json({auth : false, message: 'email exist'})
+        if(user.password != user.password2)return res.status(400).json({message: "password not match"});
+        await user.save()
+        await user.generateToken()
+        res.status(201).send(user)
+    }
+    catch(e){
+        res.status(400).send('Unable to create user' , e)
+    }
+})
 
 router.post('/login', async (req, res) => {
-    let token = req.cookies.auth
-    User.findByToken(token, (err, user) => {
-        if(err) return res(err)
-        if(user) return res.status(400).json({
-            error: true,
-            message: 'You are already logged in'
-        })
-        else{
-            const user = User.findOne({'email': req.body.email})
-            user.then((user)=> {
-                if(!user) return res.json({isAuth : false, message: 'Auth failed, email not found'})
-                user.comparepassword(req.body.password,(err, isMatch) => {
-                if(!isMatch) return res.json({isAuth: false, message: 'password doesnt match'})
-                user.generateToken((err, user) => {
-                if(err) return res.status(400).send(err)
-                res.cookie('auth', user.token).json({
-                    isAuth : true,
-                    id : user._id,
-                    email: user.email
-                })
-            })
-            })
-            }).catch((error) => {console.log(error);})
-        }
-    })
-    
+    try{
+        const user = await User.findByCredentials(req.body.email, req.body.password)
+        console.log(user);
+        await user.generateToken()
+        res.status(200).send({ user })
+    } catch(e){
+        res.status(400).send('Somthing went wrong')
+    }
 })
 
 // get logged in user
@@ -65,5 +49,6 @@ router.get('/logout',auth,function(req, res){
         res.sendStatus(200)
     })
 })
+
 
 module.exports = router
