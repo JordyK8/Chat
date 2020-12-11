@@ -21,11 +21,6 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 8
     },
-    password2:{
-        type: String,
-        required: true,
-        minlength: 8
-    },
     tokens: [{
         token: {
             type: String,
@@ -36,9 +31,10 @@ const userSchema = new mongoose.Schema({
 // Salting and Hashing the PW before saving
 userSchema.pre('save', async function (next) {
     const user = this
-    const hash = await bcrypt.hash(user.password ,10)
-    user.password = hash
-    user.password2 = hash
+    if(user.isModified('password')){
+        user.password = await bcrypt.hash(user.password, 8)
+    }
+    next()
 })
 //Generating a token 
 userSchema.methods.generateToken = async function() {
@@ -54,7 +50,7 @@ userSchema.statics.findByCredentials =  async (email, password) => {
     const user = await User.findOne({email})
     if(!user){
         throw new Error('Unable to login')
-        console.log('No user found');
+        console.log('No user found')
     }
     const isMatch = await bcrypt.compare(password, user.password)
     if(!isMatch){
