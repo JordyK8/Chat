@@ -1,7 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const User = require('../db/models/User')
+<<<<<<< HEAD
 const auth =require('../middleware/auth')
+=======
+const auth = require('../../middleware/auth')
+>>>>>>> 7e37e63bef9dc48148d4e9043265167f1daff8db
 
 
 router.post('/register', async (req, res) => {
@@ -9,7 +13,7 @@ router.post('/register', async (req, res) => {
     const userExist = await User.findOne({email: user.email})
     try{
         if(userExist) return res.status(400).json({auth : false, message: 'email exist'})
-        if(user.password != user.password2)return res.status(400).json({message: "password not match"});
+        if(user.password != req.body.password2)return res.status(400).json({message: "password not match"});
         await user.save()
         await user.generateToken()
         res.status(201).send(user)

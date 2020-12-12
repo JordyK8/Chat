@@ -30,6 +30,15 @@ app.use(cookieParser())
 app.set('view engine', 'hbs')
 app.set('views', viewsPath)
 hbs.registerPartials(partialsPath)
+app.use((req, res, next) => {
+    if(req.method === 'GET'){
+        // res.send('GET requests are deisabled')
+        next()
+    }else{
+        next()
+    }
+    
+})
 
 //Routes setup
 app.get('/', (req, res) => { console.log(req.user); res.render('home', {title: 'Home'})})
