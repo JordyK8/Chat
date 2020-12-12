@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const User = require('../db/models/User')
-const {auth} =require('../auth');
+const auth =require('../middleware/auth')
 
 
 router.post('/register', async (req, res) => {
@@ -31,14 +31,19 @@ router.post('/login', async (req, res) => {
 })
 
 // get logged in user
-router.get('/profile',auth,function(req, res){
-    res.json({
-        isAuth: true,
-        id: req.user._id,
-        email: req.user.email,
-        name: req.user.firstname + req.user.lastname
-        
-    })
+router.get('/', auth, async (req, res) => {
+    try{
+        const user = await User.findOne({})
+        res.send({ user })
+    } catch(error) {
+        res.status(400).send('Error getting users')
+      }
+  
+})
+
+router.get('/me', auth, async (req, res) => {
+    console.log(req.user);
+    res.send(req.user)
 })
 
 

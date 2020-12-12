@@ -66,18 +66,6 @@ userSchema.statics.findByCredentials =  async (email, password) => {
 }
 
 
-
-//Login assign Token function
-// userSchema.methods.generateToken = function(cb){
-//     var user = this;
-//     var token=jwt.sign(user._id.toHexString(), SECRET);
-
-//     user.token = token;
-//     user.save(function(err, user){
-//         if(err) return cb(err);
-//         cb(null, user);
-//     })
-// }
 //Find Token function
 userSchema.statics.findByToken = function(token, cb){
     var user = this;

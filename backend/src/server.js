@@ -35,12 +35,7 @@ hbs.registerPartials(partialsPath)
 app.get('/', (req, res) => { console.log(req.user); res.render('home', {title: 'Home'})})
 app.use('/admin', require('../utils/api/admin'))
 app.use('/namespace', require('../utils/api/namespace'))
-// app.use('/addNamespace', require('../utils/api/namespace'))
-// app.use('/updateNamespace', require('../utils/api/updateNamespace'))
-// app.use('/deleteNamespace', require('../utils/api/deleteNamespace'))
 app.use('/addRoom', require('../utils/api/addRoom'))
-// app.use('/signup', require('../utils/api/signup'))
-// app.use('/login', require('../utils/api/login'))
 app.use('/user', require('../utils/api/user'))
 
 // Server Listener
