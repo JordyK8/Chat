@@ -4,6 +4,7 @@ const Namespace = require('../utils/db/Namespace')
 const Room = require('../utils/db/Room')
 const ChatMessage = require('../utils/db/ChatMessage')
 db()
+const username = 
 
 module.exports = function(io){
 
@@ -67,13 +68,13 @@ io.on('connection', (socket) => {
                     const keywords = require('../utils/db/keywordMapping')
                     const keywordsArray = ['hoi', 'doei']
                     const messageObject = {
-                        username: 'Johnny',
+                        username: msg.username,
                         image: 'https://www.flaticon.com/svg/static/icons/svg/21/21104.svg',
                         time: new Date(),
                         text: ''
                     }
-                    if (msg.includes('@server')) {
-                        messageObject.text = msg
+                    if (msg.message.includes('@server')) {
+                        messageObject.text = msg.message
                         nsSocket.emit('messageFromServer', messageObject)
                         let replySend = false;
                         keywords.forEach((keyword) => {
@@ -96,7 +97,7 @@ io.on('connection', (socket) => {
                     } else {
                         //Getting the room in which the message was send from by Socket
                         const roomTitle = Array.from(nsSocket.rooms)[1];
-                        messageObject.text = msg
+                        messageObject.text = msg.message
                         let index = namespace.rooms.findIndex(x => x.title === roomTitle)
                         namespace.rooms[index].chatHistory.push(messageObject);
                         namespace.save()

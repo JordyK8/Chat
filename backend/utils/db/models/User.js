@@ -45,6 +45,17 @@ userSchema.methods.generateToken = async function() {
     return token
 }
 
+//Hiding passwords ant tokens on fetching user
+userSchema.methods.toJSON = function(){
+    const user = this
+    const userObject = user.toObject()
+
+    delete userObject.password
+    delete userObject.tokens
+
+    return userObject
+}
+
 // Login by credentials method
 userSchema.statics.findByCredentials =  async (email, password) => {
     const user = await User.findOne({email})

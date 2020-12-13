@@ -1,5 +1,4 @@
 function joinNS(endpoint, elem){
-    console.log(socket.listeners('connect'))
     let roomList = document.querySelector('#rooms-list')
     while(roomList.firstChild){
         roomList.removeChild(roomList.firstChild)
@@ -37,9 +36,7 @@ function joinNS(endpoint, elem){
     
     nsSocket.on('roomNumberUpdate', (data) => {
         const roomItem = document.getElementById(`${data.room}room`)
-        console.log(`roomitem:  ${roomItem}`);
         roomItem.innerText = data.users
-        
       })
 
     nsSocket.on('messageFromServer', (msg) => {
@@ -71,7 +68,8 @@ function joinNS(endpoint, elem){
 function sendChatMessage(e){
     e.preventDefault()
     let message = document.querySelector('#chat-input').value
-    nsSocket.emit('messageToServer', message)
+    let username = document.querySelector('#chat-input').getAttribute('username')
+    nsSocket.emit('messageToServer', {message,username})
     document.querySelector('#chat-input').value =''    
 }
 

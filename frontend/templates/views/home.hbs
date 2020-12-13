@@ -1,4 +1,5 @@
 {{>header}}
+<h1>{{user.username}}</h1>
 <section id="chat">
     <div id="chat-menu">
         <svg id="chat-button-open" class="chat-menu-button" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -41,7 +42,7 @@
         </div>
            <form id="chat-form">
                <div id="chat-layout">
-                    <input id="chat-input" type="text" placeholder="Type your message...">
+                    <input username="{{user.username}}" id="chat-input" type="text" placeholder="Type your message...">
                     <button type="submit" id="chat-button" class="btn btn-secondary">Send</button>
                 </div
             </form>
