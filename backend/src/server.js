@@ -79,103 +79,19 @@ const users = [
     {id:3, username:'henk', email:'henk@j.j', password: 'secret'},
 ]
 //Routes setup
-app.get('/', (req, res) => { 
-    const { userId } = req.session
-    if(userId){
-        res.redirect('/home')
-    }else{
-        res.redirect('/login')
-    }
-})
-app.get('/home', redirectLogin, (req, res) => {
-    const { user } = res.locals
-    console.log('userrrrrrrrr::::::: ', user);
-    res.render('home', user)
-})
-
-app.get('/profile', redirectLogin, (req, res) => {
-    const { user } = res.locals
-    res.send(user)
-})
-
-
-app.get('/login', redirectHome, (req, res) => {
-    res.render('login')
-    // <h1>Login</h1>
-    // <form method='post' action='/login'>
-    // <input type='email' name='email' placeholder='Email' required />
-    // <input type='password' name='password' placeholder='Password' required />
-    // <input type='submit' />
-    // </form>
-    // <a href='/register'>register</a>
-    
-    //req.session.userId = 
-})
-
-app.post('/login', redirectHome, (req, res) => {
-    const { email, password} = req.body
-    if(email && password){
-        const user = users.find(user => user.email === email && user.password === password)
-        if(user){
-            req.session.userId = user.id
-            return res.redirect('/home')
-        }
-    }console.log('no user');
-    res.redirect('/login')
-})
-
-app.get('/register', redirectHome, (req, res) => {
-    res.send(`
-    <h1>Register</h1>
-    <form method='post' action='/register'>
-    <input type='name' name='name' placeholder='Name' required />
-    <input type='email' name='email' placeholder='Email' required />
-    <input type='password' name='password' placeholder='Password' required />
-    <input type='submit' />
-    </form>
-    <a href='/login'>login</a>
-    `)
-    //req.session.userId = 
-})
-
-app.post('/register', redirectHome, (req, res) => {
-    const { name, email, password} = req.body
-    if(name && email && password){
-        const exists = users.some(
-            user => user.email === email
-        )
-        if(!exists){
-            const user = {
-                id: users.length + 1,
-                name,
-                email,
-                password
-            }
-
-            users.push(user)
-            req.session.userId = user.id
-            return res.redirect('/home')
-        }
-    }
-    res.redirect('/register')
-})
-
-app.post('/logout', redirectLogin, (req, res) => {
-    req.session.destroy(err => {
-        if(err){
-            return res.redirect('/home')
-        }
-        res.clearCookie('sid')
-        res.redirect('/login')
-    })
-})
 
 
 
 
 
 
-app.use('/admin', require('../utils/api/admin'))
+
+
+
+
+
+
+app.use('/', require('../utils/routes/pages'))
 app.use('/namespace', require('../utils/api/namespace'))
 app.use('/addRoom', require('../utils/api/addRoom'))
 app.use('/users', require('../utils/api/user'))

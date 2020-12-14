@@ -11,23 +11,26 @@ const redirectLogin = (req, res, next)=> {
     }
 }
 
+const redirectHome = (req, res, next)=> {
+    if(req.session.userId){
+        res.redirect('/home')
+    }else{
+        next()
+    }
+}
+
 //Create user
-router.post('/', async (req, res) => {
+router.post('/', redirectHome, async (req, res) => {
     const user = new User(req.body)
     try {
         const userExist = await User.findOne({
             email: user.email
         })
-        if (userExist) return res.status(400).send({
-            auth: false,
-            message: 'email exist'
-        })
-        if (user.password != req.body.password2) return res.status(400).send({
-            message: "password not match"
-        });
+        if (userExist) return res.status(400).send({ message: 'email exist'})
+        if (user.password != req.body.password2) return res.status(400).send({ message: "password not match"});
         await user.save()
-        await user.generateToken()
-        res.status(201).send(user)
+        req.session.userId = user._id
+        res.redirect('/home')
     } catch (e) {
         res.status(400).send('Unable to create user' + e)
     }
@@ -61,38 +64,30 @@ router.delete('/me', auth, async (req, res) => {
     }
 })
 
-// Get users
-router.get('/', auth, async (req, res) => {
-    try {
-        const users = await User.find({})
-        res.send({
-            users
-        })
-    } catch (error) {
-        res.status(400).send('Error getting users')
-    }
-
-})
-//Get current loged in user
-router.get('/me', auth, async (req, res) => {
-    res.send(req.user)
-})
-
 //Login user
-router.post('/login', async (req, res) => {
+router.post('/login', redirectHome, async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
         //const token = await user.generateToken()
         req.session.userId = user._id
         return res.status(200).redirect('/home')
         //Later this will include error messages with redirecting to login page
-        //res.redirect('/login' {error: '...'})
     } catch (e) {
         res.status(400).send(e)
-        //res.redirect('/login' {error: '...'})
+        // res.redirect('/login' {error: '...'})
     }
 })
 
+///////////////////////////////////////////////      I NEED TO CHECK IF THIS LOGOUT WORKS. I dont know if the methhds on request are async...
+// app.post('/logout', redirectLogin, (req, res) => {
+//     req.session.destroy(err => {
+//         if(err){
+//             return res.redirect('/home')
+//         }
+//         res.clearCookie('sid')
+//         res.redirect('/login')
+//     })
+// })
 
 //Logout current user session with token
 router.post('/logout', redirectLogin, async (req, res) => {
@@ -117,5 +112,10 @@ router.post('/logoutAll', auth, async (req, res) => {
     }
 })
 
+//Get current user profile
+router.get('/profile', redirectLogin, (req, res) => {
+    const { user } = res.locals
+    res.render('profile', {user})
+})
 
 module.exports = router
