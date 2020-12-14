@@ -1,0 +1,14 @@
+{{>header}}
+<div id="signup-form" class="authentication-form">
+  <h3>Sign Up</h3>
+  <form action="/users" method="POST">
+    <input class="form-control" type="text" name="username" placeholder="Username" required>
+    <input class="form-control" type="email" name="email" placeholder="Email address" required>
+    <input class="form-control" type="password" name="password" placeholder="Password" required>
+    <input class="form-control" type="password" name="password2" placeholder="Password" required>
+    <button type="submit">Sign Up</button>
+    <button class="cancle-button" type="button">Cancle</button>
+  </form>
+    <span><a class="google-button" href="/signupGoogle"> Google Signup</a></span>
+</div>
+{{>footer}}

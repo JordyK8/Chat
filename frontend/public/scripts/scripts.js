@@ -1,13 +1,6 @@
 
   const socket = io('http://localhost:3000')
   let nsSocket = ''
-  console.log(document.querySelector('#chat-input').getAttribute('username'));
-  if(!document.querySelector('#chat-input').getAttribute('username')){
-    document.getElementById('login-form').style.display = 'block'
-    document.getElementById('chat').style.display = 'none'
-  }else{
-    document.getElementById('chat').style.display = 'block'
-  }
   const nsList = document.querySelector('#namespace-list')
 // Getting the namespaces and start-message on connection
   socket.on('welcome', (data) => {

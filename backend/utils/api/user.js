@@ -3,6 +3,14 @@ const router = express.Router()
 const User = require('../db/models/User')
 const auth = require('../middleware/auth')
 
+const redirectLogin = (req, res, next)=> {
+    if(!req.session.userId){
+        res.redirect('/login')
+    }else{
+        next()
+    }
+}
+
 //Create user
 router.post('/', async (req, res) => {
     const user = new User(req.body)
@@ -74,23 +82,27 @@ router.get('/me', auth, async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
-        const token = await user.generateToken()
-        res.status(200).render('home', {user,token})
+        //const token = await user.generateToken()
+        req.session.userId = user._id
+        return res.status(200).redirect('/home')
+        //Later this will include error messages with redirecting to login page
+        //res.redirect('/login' {error: '...'})
     } catch (e) {
-        res.status(400).send('Somthing went wrong')
+        res.status(400).send(e)
+        //res.redirect('/login' {error: '...'})
     }
 })
 
+
 //Logout current user session with token
-router.post('/logout', auth, async (req, res) => {
+router.post('/logout', redirectLogin, async (req, res) => {
     try {
-        req.user.tokens = req.user.tokens.filter((token) => {
-            return token.token != req.token
-        })
-        await req.user.save()
-        res.send()
+        await req.session.destroy()
+        await res.clearCookie('sid')
+        await res.redirect('/login')
+        
     } catch (e) {
-        res.status(500).send()
+        res.status(500).send(e)
     }
 })
 
