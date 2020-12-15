@@ -27,10 +27,10 @@ router.get('/admin', redirectLogin ,async (req, res) => {
     }
 })
 router.get('/login', redirectHome, (req, res) => {
-    res.render('login')
+    res.render('login', {title: 'Login'})
 })
 router.get('/register', redirectHome, (req, res) => {
-    res.render('register')
+    res.render('register', {title:"Register"})
 })
 
 router.get('/', (req, res) => { 
@@ -44,7 +44,7 @@ router.get('/', (req, res) => {
 
 router.get('/home', redirectLogin, (req, res) => {
     const { user } = res.locals
-    res.render('home', user)
+    res.render('home', {title: 'Home', user })
 })
 
 router.get('/profile', redirectLogin, (req, res) => {

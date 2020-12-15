@@ -73,8 +73,7 @@ router.post('/login', redirectHome, async (req, res) => {
         return res.status(200).redirect('/home')
         //Later this will include error messages with redirecting to login page
     } catch (e) {
-        res.status(400).send(e)
-        // res.redirect('/login' {error: '...'})
+        res.render('login' ,{ title: 'Home', error: e })
     }
 })
 
