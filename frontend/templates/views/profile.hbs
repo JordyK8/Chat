@@ -14,8 +14,7 @@
     </form>
 </div>
 <div id="profile-pic">
-  <p>hoi</p>
-  <img src="{{user.profilepic.data}}" alt="User profile picture">
+  <img src="{{user.avatar}}" alt="User profile picture {{user.avatar}}"  height="100px">
   <form action="/users/fileupload" method="post" enctype="multipart/form-data">');
     <input type="file" name="filetoupload" />
     <button type="submit">Submit</button>

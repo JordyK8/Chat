@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const User = require('../db/models/User')
 const auth = require('../middleware/auth')
+const fs = require('fs')
 
 const redirectLogin = (req, res, next)=> {
     if(!req.session.userId){
@@ -28,16 +29,18 @@ function checkUpdates(){
 }
 
 //Create user
-const fs = require('fs')
+
 router.post('/fileupload', redirectLogin, async (req, res) => {
     const { user } = res.locals
     try{
         if(!req.files) throw new Error('No file found in upload.')
         // Filepath name needs to be hashed and send to the DB 
         let avatar = req.files.filetoupload
-        const filePath = `uploads/user-avatars/${user._id}@${user.username}-${avatar.name}`
-
-        await fs.writeFile(filePath, avatar.data, 'binary', function(err){})
+        const filePath = `/uploads/user-avatars/${user._id}@${user.username}-${avatar.name}`
+        await fs.unlink(`frontend/public${user.avatar}`, (err) => {if(err) console.log(err);})
+        await fs.writeFile(`frontend/public${filePath}`, avatar.data, 'binary', function(err){if(err)console.log(err);})
+        user.avatar = filePath
+        await user.save()
         res.render('profile', {title: 'Profile', alert: { title: 'Upload succes!', message: 'Your profile picturte has been uploaded!', type: 'alert-info'}})
 
     }
@@ -98,7 +101,6 @@ router.delete('/me', redirectLogin, async (req, res) => {
 router.post('/login', redirectHome, async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
-        //const token = await user.generateToken()
         req.session.userId = user._id
         return res.status(200).redirect('/home')
         //Later this will include error messages with redirecting to login page

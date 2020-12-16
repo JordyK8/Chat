@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
-// const jwt = require('jsonwebtoken')
+
 const SECRET = process.env.SECRET || 'mysecret'
 
 
@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 8
+    },
+    avatar: {
+        type: String,
+        default: '/uploads/user-avatars/default.svg',
+        required: false
     }
 })
 // Salting and Hashing the PW before saving
@@ -30,16 +35,9 @@ userSchema.pre('save', async function (next) {
     }
     next()
 })
-//Generating a token 
-// userSchema.methods.generateToken = async function() {
-//     const user = this
-//     const token = jwt.sign({ _id: user._id }, SECRET);
-//     user.tokens = user.tokens.concat({token})
-//     await user.save()
-//     return token
-// }
 
-//Hiding passwords ant tokens on fetching user
+
+//Hiding passwords on fetching data
 userSchema.methods.toJSON = function(){
     const user = this
     const userObject = user.toObject()
@@ -61,27 +59,6 @@ userSchema.statics.findByCredentials =  async (email, password) => {
     return user
 }
 
-
-//Find Token function
-// userSchema.statics.findByToken = function(token, cb){
-//     var user = this;
-
-//     jwt.verify(token, SECRET, function(err, decode){
-//         user.findOne({"_id": decode, "token":token},function(err, user){
-//             if(err) return cb(err);
-//             cb(null, user);
-//         })
-//     })
-// }
-//Delete Token
-// userSchema.methods.deleteToken = function(token, cb){
-//     var user = this;
-
-//     user.update({$unset : {token :1}},function(err, user){
-//         if(err) return cb(err);
-//         cb(null, user);
-//     })
-// }
 
 const User = mongoose.model('User', userSchema)
 
