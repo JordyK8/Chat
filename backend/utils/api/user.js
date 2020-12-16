@@ -28,6 +28,25 @@ function checkUpdates(){
 }
 
 //Create user
+const fs = require('fs')
+router.post('/fileupload', redirectLogin, async (req, res) => {
+    const { user } = res.locals
+    try{
+        if(!req.files) throw new Error('No file found in upload.')
+        // Filepath name needs to be hashed and send to the DB 
+        let avatar = req.files.filetoupload
+        const filePath = `uploads/user-avatars/${user._id}@${user.username}-${avatar.name}`
+
+        await fs.writeFile(filePath, avatar.data, 'binary', function(err){})
+        res.render('profile', {title: 'Profile', alert: { title: 'Upload succes!', message: 'Your profile picturte has been uploaded!', type: 'alert-info'}})
+
+    }
+    catch(e){
+        res.render('profile', {title: 'Profile', alert: { title: 'Unable to upload file', message: e, type: 'alert-warning'}})
+    }
+})
+
+
 router.post('/', redirectHome, async (req, res) => {
     const user = new User(req.body)
     try {

@@ -13,4 +13,12 @@
         <button class="cancle-button" type="button">Cancle</button>
     </form>
 </div>
+<div id="profile-pic">
+  <p>hoi</p>
+  <img src="{{user.profilepic.data}}" alt="User profile picture">
+  <form action="/users/fileupload" method="post" enctype="multipart/form-data">');
+    <input type="file" name="filetoupload" />
+    <button type="submit">Submit</button>
+  </form>
+</div>
 {{>footer}}

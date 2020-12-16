@@ -4,6 +4,9 @@ const path = require('path')
 const hbs = require('hbs')
 const session = require('express-session')
 const User = require('../utils/db/models/User')
+const fileUpload = require('express-fileupload')
+
+app.use(fileUpload({limits:{fileSize: 100 * 3000 * 2000}}))
 
 const twoHours = 1000*60*60*2
 app.use(session({

@@ -13,11 +13,9 @@ io.on('connection', (socket) => {
     socket.on('disconnect', (reason) => {
         console.log('Main socket closed');
         socket.removeAllListeners()
-        socket.close()
+        //if(socket) return socket.close()
     })
     checkConnection++
-    console.log('triggered');
-    console.log('a user connected');
     const namespaces = Namespace.find({})
     namespaces.then((namespaces) => {
         socket.emit('welcome', {
@@ -25,7 +23,6 @@ io.on('connection', (socket) => {
             nsData: namespaces
         })
         socket.once('disconnect', (socket) => {
-            socket.removeAllListeners()
             const roomToLeave = Array.from(socket.rooms)[1]
             socket.leave(roomToLeave)
             socket.close()
