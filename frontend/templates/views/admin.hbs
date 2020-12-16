@@ -18,13 +18,13 @@
                         <button name="{{this.title}}" class="addRoomButton">Add Room</button>
                         </div>
                         <div class="col-3 buttonSection">
-                            <form action="/deleteNamespace" method="POST">
+                            <form action="/namespace/delete" method="POST">
                             <button name="{{this.title}}" type='submit' class="deleteButton" value="{{this.title}}">Delete</button>
                             <input type="hidden" name="namespaceTitle" value="{{this.title}}">
                         </form>
                         </div>
                         <div class="hiddenForm" id="{{this.title}}form">
-                            <form action="/updateNamespace" method="POST">
+                            <form action="/namespace/update" method="POST">
                                 <input type="hidden" name="originalNamespaceTitle" value="{{this.title}}">
                                 <input type="text" class="form-control" name="namespaceTitle" id=""
                                     value="{{this.title}}">
@@ -50,7 +50,7 @@
             </div>
         </div>
         <div id="addNSform" class="hiddenForm">
-            <form action="/addNamespace" method="POST">
+            <form action="/namespace/create" method="POST">
                 <input class="form-control" type="text" name="namespaceTitle" placeholder="Title"
                     pattern="[a-zA-Z0-9]+[a-zA-Z0-9 ]+" required>
                 <input class="form-control" type="text" name="image" placeholder="Image-url" required>
