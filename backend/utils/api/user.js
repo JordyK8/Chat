@@ -19,6 +19,14 @@ const redirectHome = (req, res, next)=> {
     }
 }
 
+function checkUpdates(){
+    if(!req.body.password || !req.body.password2){
+        //Make this more dynamicly -- it needs to return all other fields not just static fields. Need to be a filter or something. Do it later please!!!!
+        return ['username','email']
+    }
+    return Object.keys(req.body)
+}
+
 //Create user
 router.post('/', redirectHome, async (req, res) => {
     const user = new User(req.body)
@@ -26,41 +34,44 @@ router.post('/', redirectHome, async (req, res) => {
         const userExist = await User.findOne({
             email: user.email
         })
-        if (userExist) return res.status(400).send({ message: 'email exist'})
-        if (user.password != req.body.password2) return res.status(400).send({ message: "password not match"});
+        if (userExist) throw new Error('This email has already been registered.')
+        if (user.password != req.body.password2) throw new Error('Given passwords don\'t seem to match.')
         await user.save()
         req.session.userId = user._id
         res.redirect('/home')
     } catch (e) {
-        res.status(400).send('Unable to create user' + e)
+        res.render( 'register',{title: 'Register', alert:{title: 'Unable te create user!', message: e, type: 'alert-danger'}})
     }
 })
 
 //Update user
-router.patch('/me', auth, async (req, res) => {
-    const updates = Object.keys(req.body)
-    const allowedUpdates = ['username', 'email', 'password']
+router.post('/update', redirectLogin, async (req, res) => {
+    const { user } = res.locals
+    let updates = checkUpdates(Object.keys(req.body))
+    const allowedUpdates = ['username', 'email', 'password', 'password2']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
     
-    if (!isValidOperation) {return res.status(400).send({error: 'invalid updates!'})}
     try {
-        updates.forEach((update) => req.user[update] = req.body[update])
-        await req.user.save()
+        if (!isValidOperation) throw new Error('The given updates are not valid updates. Some of the fields your trying to update might be rescricted by the server.')
+        if(req.body.password !== req.body.password2) throw new Error('Given passwords don\'t match. Please try again.')
+    
+        updates.forEach((update) => user[update] = req.body[update])
+        await user.save()
         
-        res.send(req.user)
+        res.render('profile', {title: 'Profile', alert:{title:'Update success!', message: 'Your updates have been approved and registered in our database.', type: 'alert-info'}})
     } catch (e) {
-        res.status(404).send(e)
+        res.render('profile', {title: 'Profile', alert:{ title: 'Unable to update profile', message: e, type: 'alert-danger'}})
     }
 })
 
 //Delete user
-router.delete('/me', auth, async (req, res) => {
+router.delete('/me', redirectLogin, async (req, res) => {
     console.log(req.user);
     try {
         await User.findByIdAndRemove(req.user._id)
         res.send(req.user)
     } catch (e) {
-        res.status(500).send(e)
+        res.render('profile', {title: 'Profile', alert: { title: 'Unable to delete user', message: e , type: 'alert-danger' }})
     }
 })
 
@@ -73,22 +84,10 @@ router.post('/login', redirectHome, async (req, res) => {
         return res.status(200).redirect('/home')
         //Later this will include error messages with redirecting to login page
     } catch (e) {
-        res.render('login' ,{ title: 'Home', error: e })
+        res.render('login' ,{ title: 'Login', alert:{title: 'Login failed!', type: 'alert-danger', message: e } })
     }
 })
 
-///////////////////////////////////////////////      I NEED TO CHECK IF THIS LOGOUT WORKS. I dont know if the methhds on request are async...
-// app.post('/logout', redirectLogin, (req, res) => {
-//     req.session.destroy(err => {
-//         if(err){
-//             return res.redirect('/home')
-//         }
-//         res.clearCookie('sid')
-//         res.redirect('/login')
-//     })
-// })
-
-//Logout current user session with token
 router.post('/logout', redirectLogin, async (req, res) => {
     try {
         await req.session.destroy()
@@ -96,25 +95,14 @@ router.post('/logout', redirectLogin, async (req, res) => {
         await res.redirect('/login')
         
     } catch (e) {
-        res.status(500).send(e)
-    }
-})
-
-//Logout all sessions with tokens
-router.post('/logoutAll', auth, async (req, res) => {
-    try {
-        req.user.tokens = []
-        await req.user.save()
-        res.send()
-    } catch (e) {
-        res.status(500).send()
+        res.render('home', { title:'Home', alert:{ type: 'alert-warning', title:'Unable to logout', message: e}})
     }
 })
 
 //Get current user profile
-router.get('/profile', redirectLogin, (req, res) => {
+router.get('/me', redirectLogin, (req, res) => {
     const { user } = res.locals
-    res.render('profile', {user})
+    res.render('profile', {title: 'Profile', user})
 })
 
 module.exports = router

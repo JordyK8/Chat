@@ -1,4 +1,16 @@
 {{>header}}
 <p>{{user.username}}</p>
 <p>{{user.email}}</p>
+<button>Update profile</button>
+<div id="update-profile">
+    <h3>Update</h3>
+    <form action="/users/update" method="POST">
+        <input class="form-control" type="text" name="username" value="{{user.username}}">
+        <input class="form-control" type="email" name="email" value="{{user.email}}">
+        <input class="form-control" type="password" name="password" placeholder="New Password">
+        <input class="form-control" type="password" name="password2" placeholder="New Password">
+        <button type="submit">Update</button>
+        <button class="cancle-button" type="button">Cancle</button>
+    </form>
+</div>
 {{>footer}}

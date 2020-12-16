@@ -41,9 +41,12 @@
       </li>
     </ul>
             <a id="logout-button" class="nav-link nav-button"><form method="POST" action="/users/logout"><button>Logout</button></form></a>
-            <a id="logout-button" class="nav-link nav-button" href="/users/profile"><button>Profile</button></a>
+            <a id="logout-button" class="nav-link nav-button" href="/users/me"><button>Profile</button></a>
 
   </div>
 </nav>
 <h1>{{title}}</h1>
-<h3>{{error}}</h3>
+<div class="alert {{alert.type}}">
+  <strong>{{alert.title}}</strong> {{alert.message}}
+</div>
+
