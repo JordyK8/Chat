@@ -33,16 +33,20 @@
           <a class="dropdown-item" href="#">Action</a>
         </div>
       </li>
+      {{#unless user}}
       <li class="nav-item">
         <a id="login-button"class="nav-link nav-button" href="/login">Login</a>
       </li>
       <li class="nav-item">
         <a id="register-button"class="nav-link nav-button" href="/register">Register</a>
       </li>
+      {{/unless}}
     </ul>
+    {{#if user}}
             <a id="logout-button" class="nav-link nav-button"><form method="POST" action="/users/logout"><button>Logout</button></form></a>
             <a id="logout-button" class="nav-link nav-button" href="/users/me"><button>Profile</button></a>
-
+            <img src="{{user.avatar}}" alt="User profile picture {{user.avatar}}"  height="50px">
+{{/if}}
   </div>
 </nav>
 <h1>{{title}}</h1>
